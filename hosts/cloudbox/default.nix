@@ -64,7 +64,7 @@
       openFirewall = false;
 
       # Testing only: exposes an unencrypted, unauthenticated VNC port.
-      insecureTestMode = true;
+      insecureTestMode = false;
     };
 
     # Packages used by this host only can be added here.

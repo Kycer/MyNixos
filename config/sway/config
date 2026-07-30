@@ -16,7 +16,7 @@ gaps outer 2
 # Cloudbox runs with WLR_BACKENDS=headless. This output is also captured by WayVNC.
 output HEADLESS-1 {
     mode 1920x1080
-    scale 1.25
+    scale 1.5
 }
 
 # Waybar reads its native JSONC/CSS configuration directly from this repository.
