@@ -65,7 +65,8 @@
       enable = true;
       address = "10.10.0.2";
       port = 5900;
-      openFirewall = false;
+      openFirewall = true;
+      firewallInterface = "wg0";
 
       # Testing only: exposes an unencrypted, unauthenticated VNC port.
       insecureTestMode = false;
