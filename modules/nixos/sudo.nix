@@ -3,7 +3,7 @@
 {
   security.sudo = {
     enable = true;
-    wheelNeedsPassword = true;
+    wheelNeedsPassword = false;
 
     extraRules = lib.optionals config.my.sudo.passwordlessPowerCommands [
       {
