@@ -4,28 +4,66 @@ set shell := ["bash", "-euo", "pipefail", "-c"]
 host := env("NIXOS_HOST", "cloudbox")
 flake := env("NIXOS_FLAKE", home_directory() / ".nixos")
 
+# 暂存本地改动、拉取远程配置，再恢复本地改动。
+pull:
+  #!/usr/bin/env bash
+  set -Eeuo pipefail
+
+  repo="{{flake}}"
+  stashed=false
+
+  if ((EUID == 0)); then
+    echo "错误：请使用配置仓库所属的普通用户运行 pull。" >&2
+    exit 1
+  fi
+
+  git -C "$repo" rev-parse --is-inside-work-tree >/dev/null
+
+  restore_stash() {
+    if [[ "$stashed" == true ]]; then
+      stashed=false
+      echo "==> 恢复拉取前的本地改动"
+      git -C "$repo" stash pop --index
+    fi
+  }
+
+  trap restore_stash EXIT
+
+  if [[ -n "$(git -C "$repo" status --porcelain --untracked-files=normal)" ]]; then
+    echo "==> 暂存本地改动"
+    git -C "$repo" stash push --include-untracked \
+      --message "just pull: temporary local changes"
+    stashed=true
+  fi
+
+  echo "==> 拉取远程配置"
+  git -C "$repo" pull --ff-only
+
+  restore_stash
+  trap - EXIT
+
 # 检查所有 flake 输出，但不构建软件包。
-check:
+check: pull
   nix flake check "{{flake}}"
 
 # 构建当前主机配置，但不激活。
-build:
-  sudo nixos-rebuild build --flake "{{flake}}#{{host}}"
+build: pull
+  sudo nixos-rebuild build --flake "path:{{flake}}#{{host}}"
 
 # 构建并立即激活当前主机配置。
-switch:
-  sudo nixos-rebuild switch --flake "{{flake}}#{{host}}"
+switch: pull
+  sudo nixos-rebuild switch --flake "path:{{flake}}#{{host}}"
 
 # 临时激活配置，重启后恢复原来的启动配置。
-test:
-  sudo nixos-rebuild test --flake "{{flake}}#{{host}}"
+test: pull
+  sudo nixos-rebuild test --flake "path:{{flake}}#{{host}}"
 
 # 构建配置，并设置为下次启动时使用。
-boot:
-  sudo nixos-rebuild boot --flake "{{flake}}#{{host}}"
+boot: pull
+  sudo nixos-rebuild boot --flake "path:{{flake}}#{{host}}"
 
 # 更新 flake.lock；切换系统前应先检查更新内容并运行 check。
-update:
+update: pull
   nix flake update --flake "{{flake}}"
 
 # 查看 NixOS 系统历史版本。
