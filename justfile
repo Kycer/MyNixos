@@ -107,5 +107,5 @@ wg-gen-keys:
     echo "==> 私钥已成功保存至 /etc/wireguard/private.key"
   fi
   echo "==> WireGuard 公钥 (Public Key)："
-  nix-shell -p wireguard-tools --run "wg pubkey < /etc/wireguard/private.key"
+  sudo cat /etc/wireguard/private.key | nix-shell -p wireguard-tools --run "wg pubkey"
 
