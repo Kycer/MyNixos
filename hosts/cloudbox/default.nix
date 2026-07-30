@@ -5,6 +5,8 @@
     ./hardware-configuration.nix
   ];
 
+  nixpkgs.config.allowUnfree = true;
+
   boot.loader = {
     systemd-boot = {
       enable = true;
@@ -67,8 +69,19 @@
 
     # Packages used by this host only can be added here.
     packages = {
-      system = [ ];
-      home = with pkgs; [ ];
+      system = with pkgs; [
+        gcc
+        jetbrains.datagrip
+        rustup
+        python3
+        go
+        nodejs_26
+        pnpm
+      ];
+
+      home = with pkgs; [
+        telegram-desktop
+      ];
     };
   };
 

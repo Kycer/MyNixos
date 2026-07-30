@@ -17,7 +17,6 @@ in
       settings = {
         address = cfg.address;
         port = cfg.port;
-        output = "HEADLESS-1";
         enable_auth = false;
       };
     };

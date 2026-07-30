@@ -15,12 +15,24 @@ in
       package = cfg.package;
 
       languagePacks = [
-        "en-US"
         "zh-CN"
       ];
 
       policies = {
         DisableTelemetry = true;
+        RequestedLocales = [ "zh-CN" ];
+
+        ExtensionSettings = {
+          "adguardadblocker@adguard.com" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/adguard-adblocker/latest.xpi";
+            installation_mode = "force_installed";
+          };
+
+          "vimium-c@gdh1995.cn" = {
+            install_url = "https://addons.mozilla.org/firefox/downloads/latest/vimium-c/latest.xpi";
+            installation_mode = "force_installed";
+          };
+        };
       };
 
       profiles.default = {
@@ -29,8 +41,8 @@ in
 
         search = {
           force = true;
-          default = "ddg";
-          privateDefault = "ddg";
+          default = "google";
+          privateDefault = "google";
         };
 
         settings = {
@@ -38,7 +50,13 @@ in
           "browser.download.useDownloadDir" = true;
           "browser.newtabpage.activity-stream.feeds.telemetry" = false;
           "browser.newtabpage.activity-stream.telemetry" = false;
-          "browser.tabs.closeWindowWithLastTab" = false;
+          "browser.tabs.closeWindowWithLastTab" = true;
+          "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
+          "intl.locale.requested" = "zh-CN";
+          "layout.css.prefers-color-scheme.content-override" = 0;
+          "sidebar.revamp" = true;
+          "sidebar.verticalTabs" = true;
+          "sidebar.visibility" = "always-show";
         };
       };
     };
