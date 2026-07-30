@@ -90,3 +90,22 @@ clean-results directory=".":
 # 对 Nix store 中相同的文件进行去重。
 optimise:
   sudo nix store optimise
+
+# 使用 nix-shell 自动生成 WireGuard 私钥并输出对应的公钥。
+wg-gen-keys:
+  #!/usr/bin/env bash
+  set -Eeuo pipefail
+  sudo mkdir -p /etc/wireguard
+  sudo chmod 700 /etc/wireguard
+  if [[ -f /etc/wireguard/private.key ]]; then
+    echo "提示：/etc/wireguard/private.key 已存在，跳过私钥生成。"
+  else
+    echo "==> 使用 nix-shell 临时生成 WireGuard 私钥..."
+    sudo touch /etc/wireguard/private.key
+    sudo chmod 600 /etc/wireguard/private.key
+    nix-shell -p wireguard-tools --run "wg genkey" | sudo tee /etc/wireguard/private.key > /dev/null
+    echo "==> 私钥已成功保存至 /etc/wireguard/private.key"
+  fi
+  echo "==> WireGuard 公钥 (Public Key)："
+  nix-shell -p wireguard-tools --run "wg pubkey < /etc/wireguard/private.key"
+

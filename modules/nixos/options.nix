@@ -67,6 +67,20 @@ in
       audio.enable = mkEnableOption "PipeWire audio";
       fonts.enable = mkEnableOption "the shared font collection";
       openssh.enable = mkEnableOption "the OpenSSH server";
+
+      wireguard = {
+        enable = mkEnableOption "WireGuard VPN 服务与诊断工具";
+        listenPort = mkOption {
+          type = types.port;
+          default = 51820;
+          description = "WireGuard UDP 监听端口";
+        };
+        openFirewall = mkOption {
+          type = types.bool;
+          default = true;
+          description = "是否在 NixOS 防火墙中自动开放 WireGuard UDP 监听端口";
+        };
+      };
     };
 
     programs = {

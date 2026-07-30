@@ -45,6 +45,10 @@
       audio.enable = true;
       fonts.enable = true;
       openssh.enable = true;
+      wireguard = {
+        enable = true;
+        listenPort = 51820;
+      };
     };
 
     programs = {

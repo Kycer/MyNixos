@@ -39,6 +39,31 @@ in
 
   programs.mtr.enable = config.my.programs.networkTools.enable;
 
+  environment.systemPackages = lib.optionals config.my.features.wireguard.enable [
+    pkgs.wireguard-tools
+  ];
+
+  networking.wg-quick.interfaces = lib.mkIf config.my.features.wireguard.enable {
+    wg0 = {
+      address = [ "10.10.0.2/24" ];
+      listenPort = config.my.features.wireguard.listenPort;
+      privateKeyFile = "/etc/wireguard/private.key";
+
+      peers = [
+        {
+          publicKey = "RfF2//z3+UR1NAzQmDzMYmG0q5COPGIj9RMi0iH3nFc=";
+          allowedIPs = [ "10.10.0.0/24" ];
+          # endpoint = "vpn.example.com:51820";
+          persistentKeepalive = 25;
+        }
+      ];
+    };
+  };
+
+  networking.firewall.allowedUDPPorts = lib.optionals (
+    config.my.features.wireguard.enable && config.my.features.wireguard.openFirewall
+  ) [ config.my.features.wireguard.listenPort ];
+
   services.openssh = lib.mkIf config.my.features.openssh.enable {
     enable = true;
     openFirewall = true;
