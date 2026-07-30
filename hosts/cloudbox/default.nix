@@ -63,7 +63,7 @@
 
     remoteDesktop.wayvnc = {
       enable = true;
-      address = "127.0.0.1";
+      address = "10.10.0.2";
       port = 5900;
       openFirewall = false;
 
