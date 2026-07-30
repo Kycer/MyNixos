@@ -1,0 +1,258 @@
+// Derived from the current system configuration.
+// Foot is started as a systemd user service; terminals use footclient.
+
+prefer-no-csd
+
+hotkey-overlay {
+    skip-at-startup
+}
+
+xwayland-satellite {
+    path "xwayland-satellite"
+}
+
+environment {
+    _JAVA_AWT_WM_NONREPARENTING "1"
+    QT_QPA_PLATFORMTHEME "qt6ct"
+    XCURSOR_SIZE "28"
+    XMODIFIERS "@im=fcitx"
+    QT_IM_MODULE "fcitx"
+    SDL_IM_MODULE "fcitx"
+    ELECTRON_OZONE_PLATFORM_HINT "auto"
+    EDITOR "nvim"
+}
+
+input {
+    keyboard {
+        xkb {
+        }
+    }
+
+    touchpad {
+        tap
+        natural-scroll
+        accel-speed 0.2
+    }
+
+    mouse {
+    }
+
+    trackpoint {
+    }
+
+    workspace-auto-back-and-forth
+}
+
+layout {
+    gaps 3
+    center-focused-column "never"
+    default-column-display "tabbed"
+    always-center-single-column
+
+    preset-column-widths {
+        proportion 0.5
+        proportion 0.96
+        proportion 1.0
+    }
+
+    preset-window-heights {
+        proportion 0.5
+        proportion 0.96
+        proportion 1.0
+    }
+
+    default-column-width { proportion 0.96; }
+
+    focus-ring {
+        off
+        width 2
+        active-gradient from="#d5c4a1" to="#bd93f9" in="oklch" angle=90 relative-to="workspace-view"
+        inactive-color "#7c6f64"
+    }
+
+    border {
+        off
+        width 8
+        active-color "#ffc87f"
+        inactive-color "#585b70"
+    }
+
+    tab-indicator {
+        hide-when-single-tab
+        place-within-column
+        gap 5
+        width 6
+        length total-proportion=1.0
+        gaps-between-tabs 2
+        corner-radius 8
+        active-gradient from="#d5c4a1" to="#bd93f9" in="oklch" angle=90 relative-to="workspace-view"
+        inactive-color "#7c6f64"
+        urgent-color "#f38ba8"
+    }
+
+    insert-hint {
+        color "#ffc87f80"
+    }
+}
+
+overview {
+    zoom 0.6
+    backdrop-color "#333333"
+
+    workspace-shadow {
+        off
+        softness 40
+        spread 10
+        offset x=0 y=10
+        color "#00000050"
+    }
+}
+
+recent-windows {
+    off
+}
+
+screenshot-path "~/Pictures/Screenshots/Screenshot from %Y-%m-%d %H-%M-%S.png"
+
+animations {
+}
+
+window-rule {
+    geometry-corner-radius 8
+    clip-to-geometry true
+}
+
+window-rule {
+    match is-active=true
+    opacity 0.90
+    draw-border-with-background false
+
+    popups {
+        geometry-corner-radius 15
+        opacity 1.0
+    }
+}
+
+window-rule {
+    match is-active=false
+    opacity 0.95
+}
+
+window-rule {
+    match app-id="firefox"
+    match app-id="code"
+    match app-id="jetbrains-idea"
+    match app-id="jetbrains-datagrip"
+    match app-id="Vncviewer"
+    default-column-width { proportion 0.96; }
+}
+
+window-rule {
+    match title="预览"
+    match app-id="Sxiv"
+    open-floating true
+}
+
+binds {
+    Mod+Shift+Slash { show-hotkey-overlay; }
+
+    Mod+Return { spawn "footclient"; }
+    Mod+D { spawn "fuzzel"; }
+    Mod+Shift+X { spawn "swaylock"; }
+    Mod+Ctrl+Shift+R { spawn "sh" "-c" "systemctl --user restart fcitx5"; }
+
+    Mod+E { spawn "footclient" "-e" "yazi"; }
+    Mod+Shift+E { spawn "nautilus"; }
+
+    Mod+W { close-window; }
+    Mod+Shift+Q { quit; }
+
+    XF86AudioRaiseVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.05+"; }
+    XF86AudioLowerVolume allow-when-locked=true { spawn "wpctl" "set-volume" "@DEFAULT_AUDIO_SINK@" "0.05-"; }
+    XF86AudioMute allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SINK@" "toggle"; }
+    XF86AudioMicMute allow-when-locked=true { spawn "wpctl" "set-mute" "@DEFAULT_AUDIO_SOURCE@" "toggle"; }
+    XF86MonBrightnessUp allow-when-locked=true { spawn "brightnessctl" "set" "+5%"; }
+    XF86MonBrightnessDown allow-when-locked=true { spawn "brightnessctl" "set" "5%-"; }
+
+    Mod+H { focus-column-left; }
+    Mod+J { focus-window-down; }
+    Mod+K { focus-window-up; }
+    Mod+L { focus-column-right; }
+
+    Mod+Shift+H { move-column-left; }
+    Mod+Shift+J { move-window-down; }
+    Mod+Shift+K { move-window-up; }
+    Mod+Shift+L { move-column-right; }
+
+    Mod+Home { focus-column-first; }
+    Mod+End { focus-column-last; }
+    Mod+Shift+Home { move-column-to-first; }
+    Mod+Shift+End { move-column-to-last; }
+
+    Mod+Ctrl+H { focus-monitor-left; }
+    Mod+Ctrl+J { focus-monitor-down; }
+    Mod+Ctrl+K { focus-monitor-up; }
+    Mod+Ctrl+L { focus-monitor-right; }
+
+    Mod+Shift+Ctrl+H { move-column-to-monitor-left; }
+    Mod+Shift+Ctrl+J { move-column-to-monitor-down; }
+    Mod+Shift+Ctrl+K { move-column-to-monitor-up; }
+    Mod+Shift+Ctrl+L { move-column-to-monitor-right; }
+
+    Mod+Tab { focus-window-previous; }
+    Mod+Shift+Tab { focus-workspace-previous; }
+    Mod+N { focus-workspace-down; }
+    Mod+P { focus-workspace-up; }
+    Mod+Ctrl+N { move-column-to-workspace-down; }
+    Mod+Ctrl+P { move-column-to-workspace-up; }
+    Mod+Shift+N { move-workspace-down; }
+    Mod+Shift+P { move-workspace-up; }
+
+    Mod+WheelScrollDown cooldown-ms=150 { focus-workspace-down; }
+    Mod+WheelScrollUp cooldown-ms=150 { focus-workspace-up; }
+    Mod+Ctrl+WheelScrollDown cooldown-ms=150 { move-column-to-workspace-down; }
+    Mod+Ctrl+WheelScrollUp cooldown-ms=150 { move-column-to-workspace-up; }
+
+    Mod+1 { focus-workspace 1; }
+    Mod+2 { focus-workspace 2; }
+    Mod+3 { focus-workspace 3; }
+    Mod+4 { focus-workspace 4; }
+    Mod+5 { focus-workspace 5; }
+    Mod+6 { focus-workspace 6; }
+    Mod+7 { focus-workspace 7; }
+    Mod+8 { focus-workspace 8; }
+    Mod+9 { focus-workspace 9; }
+
+    Mod+Shift+1 { move-column-to-workspace 1; }
+    Mod+Shift+2 { move-column-to-workspace 2; }
+    Mod+Shift+3 { move-column-to-workspace 3; }
+    Mod+Shift+4 { move-column-to-workspace 4; }
+    Mod+Shift+5 { move-column-to-workspace 5; }
+    Mod+Shift+6 { move-column-to-workspace 6; }
+    Mod+Shift+7 { move-column-to-workspace 7; }
+    Mod+Shift+8 { move-column-to-workspace 8; }
+    Mod+Shift+9 { move-column-to-workspace 9; }
+
+    Mod+Comma { consume-window-into-column; }
+    Mod+Period { expel-window-from-column; }
+    Mod+BracketLeft { consume-or-expel-window-left; }
+    Mod+BracketRight { consume-or-expel-window-right; }
+
+    Mod+T { toggle-column-tabbed-display; }
+    Mod+O { toggle-overview; }
+    Mod+R { switch-preset-column-width; }
+    Mod+Shift+R { switch-preset-window-height; }
+    Mod+Ctrl+R { reset-window-height; }
+    Mod+M { maximize-column; }
+    Mod+F { fullscreen-window; }
+    Mod+Shift+F { toggle-windowed-fullscreen; }
+    Mod+Space { toggle-window-floating; }
+    Mod+C { switch-focus-between-floating-and-tiling; }
+    Mod+Minus { set-column-width "-10%"; }
+    Mod+Equal { set-column-width "+10%"; }
+    Mod+Shift+Minus { set-window-height "-10%"; }
+    Mod+Shift+Equal { set-window-height "+10%"; }
+    Mod+Ctrl+Shift+P { power-off-monitors; }
+}
+
+include "./noctalia.kdl"
