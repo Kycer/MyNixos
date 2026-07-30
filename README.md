@@ -20,21 +20,32 @@ configuration. The host name and Linux user name are separate settings.
 Run the installer as the normal user who will own the configuration:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/USER/REPO/main/install.sh |
+curl -fsSL https://raw.githubusercontent.com/Kycer/MyNixos/main/install.sh |
   bash -s -- \
-    --repo https://github.com/USER/REPO.git \
+    --repo https://github.com/Kycer/MyNixos.git \
     --host cloudbox \
     --yes
 ```
 
-Replace `USER/REPO` with the actual GitHub repository. The installer:
+This direct download method requires the GitHub repository to be public. The installer:
 
 - clones the repository to `$HOME/.nixos`;
+- temporarily provides Git through `nix shell nixpkgs#git` when Git is not installed;
 - updates the selected host's primary user to the current user;
 - evaluates the flake through a temporary `nix shell nixpkgs#just`;
 - moves an existing `/etc/nixos` to a timestamped backup;
 - creates `/etc/nixos -> $HOME/.nixos`;
 - runs the global `switch` recipe.
+
+If the repository is private, or you prefer the configured SSH remote, clone
+it first and then run the local installer:
+
+```bash
+nix --extra-experimental-features 'nix-command flakes' \
+  shell nixpkgs#git --command \
+  git clone git@github.com:Kycer/MyNixos.git "$HOME/.nixos"
+"$HOME/.nixos/install.sh" --host cloudbox --yes
+```
 
 For an interactive confirmation, omit `--yes`. To clone and evaluate without
 changing `/etc/nixos` or the running system, add `--check-only`.

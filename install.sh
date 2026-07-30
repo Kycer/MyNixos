@@ -33,8 +33,8 @@ usage() {
   -h, --help         显示帮助
 
 示例：
-  $script_name --repo https://github.com/USER/REPO.git
-  $script_name --repo git@github.com:USER/REPO.git --host cloudbox --yes
+  $script_name --repo https://github.com/Kycer/MyNixos.git
+  $script_name --repo git@github.com:Kycer/MyNixos.git --host cloudbox --yes
 EOF
 }
 
@@ -114,15 +114,32 @@ done
 target="${target/#\~/$HOME}"
 [[ "$target" == /* ]] || die "--target 必须是绝对路径"
 
-for command_name in git nix sudo; do
+for command_name in nix sudo; do
   command -v "$command_name" >/dev/null || die "找不到命令：$command_name"
 done
 
-script_dir="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)"
+export NIX_CONFIG=$'experimental-features = nix-command flakes\n'"${NIX_CONFIG:-}"
+
+if command -v git >/dev/null; then
+  git_command=(git)
+else
+  info "系统未安装 Git，将通过 nix shell 临时使用 Git"
+  git_command=(nix shell nixpkgs#git --command git)
+fi
+
+run_git() {
+  "${git_command[@]}" "$@"
+}
+
+script_dir=""
+script_source="${BASH_SOURCE[0]-}"
+if [[ -n "$script_source" ]]; then
+  script_dir="$(cd -- "$(dirname -- "$script_source")" && pwd)"
+fi
 
 if [[ ! -e "$target" ]]; then
-  if [[ -z "$repo_url" && -d "$script_dir/.git" ]]; then
-    repo_url="$(git -C "$script_dir" remote get-url origin 2>/dev/null || true)"
+  if [[ -z "$repo_url" && -n "$script_dir" && -d "$script_dir/.git" ]]; then
+    repo_url="$(run_git -C "$script_dir" remote get-url origin 2>/dev/null || true)"
   fi
 
   [[ -n "$repo_url" ]] || die "目标目录不存在，请通过 --repo 指定 Git 仓库"
@@ -134,12 +151,12 @@ if [[ ! -e "$target" ]]; then
   clone_args+=(-- "$repo_url" "$target")
 
   info "克隆配置到 $target"
-  git "${clone_args[@]}"
+  run_git "${clone_args[@]}"
 elif [[ ! -d "$target/.git" ]]; then
   die "目标已存在但不是 Git 仓库：$target"
 elif "$update_checkout"; then
   info "更新现有配置"
-  git -C "$target" pull --ff-only
+  run_git -C "$target" pull --ff-only
 else
   info "使用现有配置：$target"
 fi
@@ -156,7 +173,6 @@ sed -i -E \
 
 export NIXOS_HOST="$host"
 export NIXOS_FLAKE="$target"
-export NIX_CONFIG=$'experimental-features = nix-command flakes\n'"${NIX_CONFIG:-}"
 
 run_just() {
   nix shell nixpkgs#just --command \
