@@ -19,21 +19,8 @@ output HEADLESS-1 {
     scale 1.25
 }
 
-bar {
-    position top
-    font pango:JetBrainsMono Nerd Font 11
-    status_command while date '+%Y-%m-%d %H:%M:%S'; do sleep 1; done
-
-    colors {
-        background #1e2030
-        statusline #cad3f5
-        separator #6e738d
-        focused_workspace #c6a0f6 #c6a0f6 #24273a
-        active_workspace #363a4f #363a4f #cad3f5
-        inactive_workspace #1e2030 #1e2030 #cad3f5
-        urgent_workspace #ed8796 #ed8796 #24273a
-    }
-}
+# Waybar reads its native JSONC/CSS configuration directly from this repository.
+exec_always --no-startup-id sh -c 'pkill -x waybar || true; exec waybar --config ~/.nixos/config/waybar/config.jsonc --style ~/.nixos/config/waybar/style.css'
 
 # Export the live Wayland environment and start user services such as Foot and WayVNC.
 exec_always --no-startup-id systemctl --user import-environment WAYLAND_DISPLAY SWAYSOCK XDG_CURRENT_DESKTOP

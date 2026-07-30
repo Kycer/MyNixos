@@ -1,0 +1,135 @@
+@define-color base #24273a;
+@define-color mantle #1e2030;
+@define-color surface0 #363a4f;
+@define-color surface1 #494d64;
+@define-color overlay1 #8087a2;
+@define-color text #cad3f5;
+@define-color subtext1 #b8c0e0;
+@define-color lavender #b7bdf8;
+@define-color blue #8aadf4;
+@define-color green #a6da95;
+@define-color yellow #eed49f;
+@define-color red #ed8796;
+
+* {
+  min-height: 0;
+  border: none;
+  border-radius: 0;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 12px;
+}
+
+window#waybar {
+  color: @text;
+  background: alpha(@mantle, 0.94);
+  border-bottom: 2px solid @surface0;
+}
+
+window#waybar.hidden {
+  opacity: 0.2;
+}
+
+tooltip {
+  color: @text;
+  background: @base;
+  border: 1px solid @surface1;
+  border-radius: 8px;
+}
+
+tooltip label {
+  padding: 6px;
+}
+
+#workspaces {
+  margin: 4px 0 4px 6px;
+  padding: 2px;
+  background: @surface0;
+  border-radius: 8px;
+}
+
+#workspaces button {
+  min-width: 20px;
+  padding: 0 7px;
+  color: @overlay1;
+  background: transparent;
+  border-radius: 6px;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+#workspaces button:hover {
+  color: @text;
+  background: @surface1;
+}
+
+#workspaces button.visible {
+  color: @subtext1;
+}
+
+#workspaces button.focused {
+  color: @base;
+  background: @lavender;
+}
+
+#workspaces button.urgent {
+  color: @base;
+  background: @red;
+}
+
+#mode {
+  margin: 4px 0;
+  padding: 0 10px;
+  color: @base;
+  background: @yellow;
+  border-radius: 8px;
+}
+
+#window {
+  padding: 0 12px;
+  color: @subtext1;
+}
+
+#pulseaudio,
+#network,
+#cpu,
+#memory,
+#tray,
+#clock {
+  margin: 4px 2px;
+  padding: 0 10px;
+  background: @surface0;
+  border-radius: 8px;
+}
+
+#pulseaudio {
+  color: @green;
+}
+
+#pulseaudio.muted {
+  color: @overlay1;
+}
+
+#network {
+  color: @blue;
+}
+
+#network.disconnected {
+  color: @red;
+}
+
+#cpu {
+  color: @yellow;
+}
+
+#memory {
+  color: @lavender;
+}
+
+#tray {
+  padding: 0 8px;
+}
+
+#clock {
+  margin-right: 6px;
+  color: @text;
+}

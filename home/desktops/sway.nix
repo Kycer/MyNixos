@@ -6,6 +6,7 @@
       foot
       fuzzel
       nautilus
+      waybar
       wireplumber
       yazi
     ];
