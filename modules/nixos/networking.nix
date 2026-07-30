@@ -52,13 +52,13 @@ in
       peers = [
         {
           publicKey = "RfF2//z3+UR1NAzQmDzMYmG0q5COPGIj9RMi0iH3nFc=";
-          allowedIPs = [ "10.10.0.3/24" ];
+          allowedIPs = [ "10.10.0.3/32" ];
           # endpoint = "vpn.example.com:51820";
           persistentKeepalive = 25;
         }
         {
           publicKey = "BEBe5n6/JQRL3wC/5HjKusGT4H4MQsvWm6L38MbKEQ4=";
-          allowedIPs = [ "10.10.0.5/24" ];
+          allowedIPs = [ "10.10.0.5/32" ];
           persistentKeepalive = 25;
         }
       ];
