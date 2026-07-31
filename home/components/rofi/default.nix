@@ -9,7 +9,7 @@ in
 {
   config = lib.mkIf isRofiEnabled (lib.mkMerge [
     {
-      home.packages = [ pkgs.rofi-wayland ];
+      home.packages = [ pkgs.rofi ];
       xdg.configFile."rofi".source = config.lib.file.mkOutOfStoreSymlink
         "${config.home.homeDirectory}/.nixos/home/components/rofi";
     }
@@ -29,4 +29,3 @@ in
     })
   ]);
 }
-
