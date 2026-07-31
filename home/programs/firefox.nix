@@ -2,6 +2,7 @@
   config,
   lib,
   osConfig,
+  pkgs,
   ...
 }:
 
@@ -96,5 +97,13 @@ in
         };
       };
     };
+
+    home.activation.firefoxStartWithLastProfile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      for ini in "${config.home.homeDirectory}/.mozilla/firefox/profiles.ini" "${config.home.homeDirectory}/.config/mozilla/firefox/profiles.ini"; do
+        if [ -f "$ini" ]; then
+          ${pkgs.gnused}/bin/sed -i 's/StartWithLastProfile=1/StartWithLastProfile=0/' "$ini"
+        fi
+      done
+    '';
   };
 }
