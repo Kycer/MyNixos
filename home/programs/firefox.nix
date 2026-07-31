@@ -20,9 +20,11 @@ let
       "browser.download.dir" = "${config.home.homeDirectory}/Downloads";
       "browser.download.downloadDir" = "${config.home.homeDirectory}/Downloads";
       "browser.download.folderList" = 2;
-      "browser.download.useDownloadDir" = true;
+      "browser.download.useDownloadDir" = false;
       "browser.newtabpage.activity-stream.feeds.telemetry" = false;
       "browser.newtabpage.activity-stream.telemetry" = false;
+      "browser.newtabpage.activity-stream.feeds.topsites" = false;
+      "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
       "browser.tabs.closeWindowWithLastTab" = true;
       "browser.theme.content-theme" = 0;
       "browser.theme.toolbar-theme" = 0;
@@ -57,7 +59,7 @@ in
           "browser.download.dir" = "${config.home.homeDirectory}/Downloads";
           "browser.download.downloadDir" = "${config.home.homeDirectory}/Downloads";
           "browser.download.folderList" = 2;
-          "browser.download.useDownloadDir" = true;
+          "browser.download.useDownloadDir" = false;
           "layout.css.prefers-color-scheme.content-override" = 0;
           "browser.theme.content-theme" = 0;
           "browser.theme.toolbar-theme" = 0;
