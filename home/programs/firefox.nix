@@ -21,10 +21,12 @@ let
       "browser.download.downloadDir" = "${config.home.homeDirectory}/Downloads";
       "browser.download.folderList" = 2;
       "browser.download.useDownloadDir" = false;
+      "browser.download.alwaysOpenPanel" = false;
       "browser.newtabpage.activity-stream.feeds.telemetry" = false;
       "browser.newtabpage.activity-stream.telemetry" = false;
       "browser.newtabpage.activity-stream.feeds.topsites" = false;
       "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
+      "browser.newtabpage.activity-stream.topSitesRows" = 0;
       "browser.tabs.closeWindowWithLastTab" = true;
       "browser.theme.content-theme" = 0;
       "browser.theme.toolbar-theme" = 0;
@@ -37,7 +39,9 @@ let
       "sidebar.visibility" = "always-show";
       "browser.profiles.enabled" = true;
       "browser.profiles.grouping.enabled" = true;
+      "browser.profiles.profile-management" = true;
       "browser.profiles.showProfileIndicator" = true;
+      "browser.profiles.created" = true;
     };
   };
 in
@@ -54,19 +58,6 @@ in
       policies = {
         DisableTelemetry = true;
         RequestedLocales = [ "zh-CN" ];
-
-        Preferences = {
-          "browser.download.dir" = "${config.home.homeDirectory}/Downloads";
-          "browser.download.downloadDir" = "${config.home.homeDirectory}/Downloads";
-          "browser.download.folderList" = 2;
-          "browser.download.useDownloadDir" = false;
-          "layout.css.prefers-color-scheme.content-override" = 0;
-          "browser.theme.content-theme" = 0;
-          "browser.theme.toolbar-theme" = 0;
-          "sidebar.revamp" = true;
-          "sidebar.verticalTabs" = true;
-          "sidebar.visibility" = "always-show";
-        };
 
         ExtensionSettings = {
           "adguardadblocker@adguard.com" = {
