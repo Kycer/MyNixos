@@ -84,7 +84,6 @@
     packages = {
       system = with pkgs; [
         gcc
-        jetbrains.datagrip
         rustup
         python3
         go
@@ -93,6 +92,7 @@
       ];
 
       home = with pkgs; [
+        jetbrains.datagrip
         telegram-desktop
         nautilus
         wireplumber
