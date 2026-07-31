@@ -53,14 +53,107 @@ in
       };
     };
 
-    desktop = mkOption {
-      type = types.enum [
-        "none"
-        "niri"
-        "sway"
-      ];
-      default = "none";
-      description = "Desktop environment enabled on this host";
+    desktop = {
+      wm = mkOption {
+        type = types.enum [
+          "none"
+          "niri"
+          "sway"
+        ];
+        default = "none";
+        description = "Desktop environment/WM enabled on this host";
+      };
+
+      shellStyle = mkOption {
+        type = types.enum [
+          "noctalia-shell"
+          "custom"
+        ];
+        default = "noctalia-shell";
+        description = "Desktop shell style: 'noctalia-shell' (All-in-One) or 'custom' (Modular Waybar/Rofi)";
+      };
+
+      custom = {
+        bar = mkOption {
+          type = types.enum [ "waybar" "none" ];
+          default = "waybar";
+          description = "Status bar component when shellStyle == 'custom'";
+        };
+
+        launcher = mkOption {
+          type = types.enum [ "rofi" "fuzzel" "none" ];
+          default = "rofi";
+          description = "Launcher component when shellStyle == 'custom'";
+        };
+
+        notification = mkOption {
+          type = types.enum [ "swaync" "dunst" "none" ];
+          default = "swaync";
+          description = "Notification daemon when shellStyle == 'custom'";
+        };
+      };
+    };
+
+    theme = {
+      gtkTheme = {
+        name = mkOption {
+          type = types.str;
+          default = "catppuccin-macchiato-lavender-standard";
+          description = "GTK theme name";
+        };
+        package = mkOption {
+          type = types.package;
+          default = pkgs.catppuccin-gtk.override {
+            accents = [ "lavender" ];
+            variant = "macchiato";
+          };
+          description = "GTK theme package to install";
+        };
+      };
+
+      iconTheme = {
+        name = mkOption {
+          type = types.str;
+          default = "Papirus-Dark";
+          description = "Icon theme name";
+        };
+        package = mkOption {
+          type = types.package;
+          default = pkgs.papirus-icon-theme;
+          description = "Icon theme package to install";
+        };
+      };
+
+      cursor = {
+        name = mkOption {
+          type = types.str;
+          default = "Bibata-Modern-Classic";
+          description = "Cursor theme name";
+        };
+        size = mkOption {
+          type = types.int;
+          default = 28;
+          description = "Cursor theme size";
+        };
+        package = mkOption {
+          type = types.package;
+          default = pkgs.bibata-cursors;
+          description = "Cursor theme package to install";
+        };
+      };
+
+      font = {
+        name = mkOption {
+          type = types.str;
+          default = "WenQuanYi Micro Hei Mono";
+          description = "Interface font name";
+        };
+        size = mkOption {
+          type = types.int;
+          default = 16;
+          description = "Interface font size";
+        };
+      };
     };
 
     features = {
@@ -119,6 +212,12 @@ in
 
     remoteDesktop.wayvnc = {
       enable = mkEnableOption "a WayVNC remote desktop";
+
+      headless = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Run Sway in headless virtual display mode (for cloud servers without physical monitors)";
+      };
 
       address = mkOption {
         type = types.str;

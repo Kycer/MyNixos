@@ -5,7 +5,7 @@
 }:
 
 let
-  desktop = config.my.desktop;
+  desktop = config.my.desktop.wm;
   remote = config.my.remoteDesktop.wayvnc;
   user = config.my.user.name;
 in
@@ -33,7 +33,7 @@ in
         enable = true;
         wrapperFeatures.gtk = true;
 
-        extraSessionCommands = lib.optionalString remote.enable ''
+        extraSessionCommands = lib.optionalString (remote.enable && remote.headless) ''
           export WLR_BACKENDS=headless
           export WLR_LIBINPUT_NO_DEVICES=1
           export WLR_RENDERER=pixman

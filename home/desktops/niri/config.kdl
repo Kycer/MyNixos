@@ -256,3 +256,4 @@ binds {
 }
 
 include "./noctalia.kdl"
+include "./config.d/*.kdl"

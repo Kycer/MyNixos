@@ -1,26 +1,87 @@
-{ pkgs, ... }:
+{ config, lib, pkgs, osConfig, ... }:
 
 let
-  catppuccinGtk = pkgs.catppuccin-gtk.override {
-    accents = [ "lavender" ];
-    size = "standard";
-    tweaks = [ ];
-    variant = "macchiato";
-  };
+  t = osConfig.my.theme;
 in
 {
-  home.packages = with pkgs; [
-    adwaita-icon-theme
-    adwaita-qt
-    adwaita-qt6
-    catppuccinGtk
-    papirus-icon-theme
-    qt6Packages.qt6ct
+  home.packages = [
+    t.gtkTheme.package
+    t.iconTheme.package
+    t.cursor.package
+    pkgs.kvantum
+    pkgs.adwaita-qt
+    pkgs.adwaita-qt6
+    pkgs.qt6Packages.qt6ct
   ];
 
-  home.sessionVariables = {
-    GTK_THEME = "catppuccin-macchiato-lavender-standard";
-    QT_QPA_PLATFORMTHEME = "qt6ct";
-    QT_STYLE_OVERRIDE = "Adwaita-Dark";
+  gtk = {
+    enable = true;
+    theme = {
+      name = t.gtkTheme.name;
+      package = t.gtkTheme.package;
+    };
+    iconTheme = {
+      name = t.iconTheme.name;
+      package = t.iconTheme.package;
+    };
+    font = {
+      name = t.font.name;
+      size = t.font.size;
+    };
+    gtk3.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+      gtk-cursor-theme-name = t.cursor.name;
+      gtk-cursor-theme-size = t.cursor.size;
+    };
+    gtk4.extraConfig = {
+      gtk-application-prefer-dark-theme = 1;
+      gtk-cursor-theme-name = t.cursor.name;
+      gtk-cursor-theme-size = t.cursor.size;
+    };
+  };
+
+  home.pointerCursor = {
+    gtk.enable = true;
+    x11.enable = true;
+    name = t.cursor.name;
+    size = t.cursor.size;
+    package = t.cursor.package;
+  };
+
+  qt = {
+    enable = true;
+    platformTheme.name = "qt6ct";
+
+    qt5ctSettings = {
+      Appearance = {
+        custom_palette = false;
+        icon_theme = t.iconTheme.name;
+        style = "Kvantum";
+      };
+      Fonts = {
+        general = "${t.font.name},${toString t.font.size},-1,5,50,0,0,0,0,0";
+      };
+    };
+
+    qt6ctSettings = {
+      Appearance = {
+        custom_palette = false;
+        icon_theme = t.iconTheme.name;
+        style = "Kvantum";
+      };
+      Fonts = {
+        general = "${t.font.name},${toString t.font.size},-1,5,50,0,0,0,0,0";
+      };
+    };
+  };
+
+
+
+  dconf.settings = {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+      gtk-theme = t.gtkTheme.name;
+      icon-theme = t.iconTheme.name;
+    };
   };
 }

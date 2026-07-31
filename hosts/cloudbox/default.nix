@@ -38,8 +38,15 @@
       };
     };
 
-    # Supported values: "none", "niri", "sway".
-    desktop = "sway";
+    desktop = {
+      wm = "sway";
+      shellStyle = "custom";
+      custom = {
+        bar = "waybar";
+        launcher = "rofi";
+        notification = "swaync";
+      };
+    };
 
     features = {
       audio.enable = true;
@@ -63,6 +70,7 @@
 
     remoteDesktop.wayvnc = {
       enable = true;
+      headless = true;
       address = "10.10.0.2";
       port = 5900;
       openFirewall = true;
@@ -86,6 +94,9 @@
 
       home = with pkgs; [
         telegram-desktop
+        nautilus
+        wireplumber
+        yazi
       ];
     };
   };

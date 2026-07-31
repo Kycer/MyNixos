@@ -1,6 +1,7 @@
 {
   imports = [
-    ./config-files.nix
+    ./components
+    ./xdg.nix
     ./desktops
     ./packages.nix
     ./programs
