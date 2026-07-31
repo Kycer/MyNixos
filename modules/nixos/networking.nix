@@ -46,6 +46,7 @@ in
   networking.wg-quick.interfaces = lib.mkIf config.my.features.wireguard.enable {
     wg0 = {
       address = [ "10.10.0.2/24" ];
+      mtu = 1380;
       listenPort = config.my.features.wireguard.listenPort;
       privateKeyFile = "/etc/wireguard/private.key";
 
@@ -58,7 +59,7 @@ in
         }
         {
           publicKey = "BEBe5n6/JQRL3wC/5HjKusGT4H4MQsvWm6L38MbKEQ4=";
-          allowedIPs = [ "10.10.0.5/32" ];
+          allowedIPs = [ "10.10.0.5/32" "10.20.0.0/24" ];
           persistentKeepalive = 25;
         }
       ];
