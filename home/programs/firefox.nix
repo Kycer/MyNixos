@@ -7,6 +7,34 @@
 
 let
   cfg = osConfig.my.programs.firefox;
+
+  commonProfile = {
+    search = {
+      force = true;
+      default = "google";
+      privateDefault = "google";
+    };
+
+    settings = {
+      "browser.download.dir" = "${config.home.homeDirectory}/Downloads";
+      "browser.download.downloadDir" = "${config.home.homeDirectory}/Downloads";
+      "browser.download.folderList" = 2;
+      "browser.download.useDownloadDir" = true;
+      "browser.newtabpage.activity-stream.feeds.telemetry" = false;
+      "browser.newtabpage.activity-stream.telemetry" = false;
+      "browser.tabs.closeWindowWithLastTab" = true;
+      "browser.theme.content-theme" = 0;
+      "browser.theme.toolbar-theme" = 0;
+      "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
+      "intl.locale.requested" = "zh-CN";
+      "layout.css.prefers-color-scheme.content-override" = 0;
+      "sidebar.main.tools" = "history,bookmarks,tabs";
+      "sidebar.revamp" = true;
+      "sidebar.verticalTabs" = true;
+      "sidebar.verticalTabs.expanded" = true;
+      "sidebar.visibility" = "always-show";
+    };
+  };
 in
 {
   config = lib.mkIf cfg.enable {
@@ -48,34 +76,23 @@ in
         };
       };
 
-      profiles.default = {
-        id = 0;
-        isDefault = true;
-
-        search = {
-          force = true;
-          default = "google";
-          privateDefault = "google";
+      profiles = {
+        me = commonProfile // {
+          id = 0;
+          isDefault = false;
+          name = "me";
         };
 
-        settings = {
-          "browser.download.dir" = "${config.home.homeDirectory}/Downloads";
-          "browser.download.downloadDir" = "${config.home.homeDirectory}/Downloads";
-          "browser.download.folderList" = 2;
-          "browser.download.useDownloadDir" = true;
-          "browser.newtabpage.activity-stream.feeds.telemetry" = false;
-          "browser.newtabpage.activity-stream.telemetry" = false;
-          "browser.tabs.closeWindowWithLastTab" = true;
-          "browser.theme.content-theme" = 0;
-          "browser.theme.toolbar-theme" = 0;
-          "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
-          "intl.locale.requested" = "zh-CN";
-          "layout.css.prefers-color-scheme.content-override" = 0;
-          "sidebar.main.tools" = "history,bookmarks,tabs";
-          "sidebar.revamp" = true;
-          "sidebar.verticalTabs" = true;
-          "sidebar.verticalTabs.expanded" = true;
-          "sidebar.visibility" = "always-show";
+        wk = commonProfile // {
+          id = 1;
+          isDefault = false;
+          name = "wk";
+        };
+
+        dv = commonProfile // {
+          id = 2;
+          isDefault = false;
+          name = "dv";
         };
       };
     };
