@@ -6,6 +6,8 @@ set $right l
 set $term footclient
 set $menu fuzzel
 
+include ~/.config/sway/config.d/*
+
 font pango:JetBrainsMono Nerd Font 11
 floating_modifier $mod normal
 workspace_auto_back_and_forth yes
