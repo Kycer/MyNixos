@@ -16,13 +16,13 @@ in
 
     (lib.mkIf isSway {
       xdg.configFile."sway/config.d/waybar.conf".text = ''
-        exec_always --no-startup-id sh -c 'pkill -x waybar || true; exec waybar --config ~/.nixos/home/components/waybar/config.jsonc --style ~/.nixos/home/components/waybar/style.css'
+        exec_always --no-startup-id sh -c 'pkill -9 -x waybar 2>/dev/null || true; sleep 0.1; exec waybar --config ~/.nixos/home/components/waybar/config.jsonc --style ~/.nixos/home/components/waybar/style.css'
       '';
     })
 
     (lib.mkIf isNiri {
       xdg.configFile."niri/config.d/waybar.kdl".text = ''
-        spawn-at-startup "sh" "-c" "pkill -x waybar || true; exec waybar --config ~/.nixos/home/components/waybar/config.jsonc --style ~/.nixos/home/components/waybar/style.css"
+        spawn-at-startup "sh" "-c" "pkill -9 -x waybar 2>/dev/null || true; sleep 0.1; exec waybar --config ~/.nixos/home/components/waybar/config.jsonc --style ~/.nixos/home/components/waybar/style.css"
       '';
     })
   ]);

@@ -17,7 +17,6 @@ in
     (lib.mkIf isSway {
       xdg.configFile."sway/config.d/rofi.conf".text = ''
         set $menu rofi -show drun
-        bindsym $mod+d exec $menu
       '';
     })
 
