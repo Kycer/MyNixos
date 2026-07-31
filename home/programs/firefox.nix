@@ -29,11 +29,13 @@ let
       "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
       "intl.locale.requested" = "zh-CN";
       "layout.css.prefers-color-scheme.content-override" = 0;
-      "sidebar.main.tools" = "history,bookmarks,tabs";
       "sidebar.revamp" = true;
       "sidebar.verticalTabs" = true;
       "sidebar.verticalTabs.expanded" = true;
       "sidebar.visibility" = "always-show";
+      "browser.profiles.enabled" = true;
+      "browser.profiles.grouping.enabled" = true;
+      "browser.profiles.showProfileIndicator" = true;
     };
   };
 in
