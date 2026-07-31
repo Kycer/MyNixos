@@ -79,7 +79,7 @@ in
       profiles = {
         me = commonProfile // {
           id = 0;
-          isDefault = false;
+          isDefault = true;
           name = "me";
         };
 
