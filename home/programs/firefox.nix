@@ -20,7 +20,7 @@ let
       "browser.download.dir" = "${config.home.homeDirectory}/Downloads";
       "browser.download.downloadDir" = "${config.home.homeDirectory}/Downloads";
       "browser.download.folderList" = 2;
-      "browser.download.useDownloadDir" = false;
+      "browser.download.useDownloadDir" = true;
       "browser.download.alwaysOpenPanel" = false;
       "browser.newtabpage.activity-stream.feeds.telemetry" = false;
       "browser.newtabpage.activity-stream.telemetry" = false;
@@ -28,11 +28,11 @@ let
       "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
       "browser.newtabpage.activity-stream.topSitesRows" = 0;
       "browser.tabs.closeWindowWithLastTab" = true;
-      "browser.theme.content-theme" = 0;
-      "browser.theme.toolbar-theme" = 0;
+      "browser.theme.content-theme" = 1;
+      "browser.theme.toolbar-theme" = 1;
       "extensions.activeThemeID" = "firefox-compact-dark@mozilla.org";
       "intl.locale.requested" = "zh-CN";
-      "layout.css.prefers-color-scheme.content-override" = 0;
+      "layout.css.prefers-color-scheme.content-override" = 2;
       "sidebar.revamp" = true;
       "sidebar.verticalTabs" = true;
       "sidebar.verticalTabs.expanded" = true;
@@ -92,13 +92,5 @@ in
         };
       };
     };
-
-    home.activation.firefoxStartWithLastProfile = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      for ini in "${config.home.homeDirectory}/.mozilla/firefox/profiles.ini" "${config.home.homeDirectory}/.config/mozilla/firefox/profiles.ini"; do
-        if [ -f "$ini" ]; then
-          ${pkgs.gnused}/bin/sed -i 's/StartWithLastProfile=1/StartWithLastProfile=0/' "$ini"
-        fi
-      done
-    '';
   };
 }
