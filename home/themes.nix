@@ -8,9 +8,6 @@ in
     t.gtkTheme.package
     t.iconTheme.package
     t.cursor.package
-    pkgs.kvantum
-    pkgs.adwaita-qt
-    pkgs.adwaita-qt6
     pkgs.qt6Packages.qt6ct
   ];
 
@@ -51,6 +48,7 @@ in
   qt = {
     enable = true;
     platformTheme.name = "qt6ct";
+    style.name = "kvantum";
 
     qt5ctSettings = {
       Appearance = {
