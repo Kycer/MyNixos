@@ -15,7 +15,9 @@
         addons = [
           pkgs.qt6Packages.fcitx5-chinese-addons
           pkgs.qt6Packages.fcitx5-configtool
-          pkgs.fcitx5-rime
+          (pkgs.fcitx5-rime.override {
+            rimeDataPkgs = [ pkgs.rime-ice ];
+          })
           pkgs.fcitx5-nord
         ];
 
@@ -42,6 +44,7 @@
 
     xdg.dataFile."fcitx5/rime/default.custom.yaml".text = ''
       patch:
+        __include: rime_ice_suggestion:/
         schema_list:
           - schema: double_pinyin_flypy
     '';

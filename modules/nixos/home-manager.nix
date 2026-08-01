@@ -1,4 +1,4 @@
-{ config, stablePkgs, ... }:
+{ config, inputs, stablePkgs, ... }:
 
 let
   user = config.my.user.name;
@@ -9,7 +9,7 @@ in
     useUserPackages = true;
 
     extraSpecialArgs = {
-      inherit stablePkgs;
+      inherit inputs stablePkgs;
     };
 
     users.${user} = {

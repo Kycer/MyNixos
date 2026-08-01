@@ -9,6 +9,11 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    mark-shot = {
+      url = "github:jswysnemc/mark-shot";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

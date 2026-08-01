@@ -15,7 +15,7 @@ inputs.nixpkgs.lib.nixosSystem {
   inherit system;
 
   specialArgs = {
-    inherit stablePkgs;
+    inherit inputs stablePkgs;
   };
 
   modules = [

@@ -1,0 +1,56 @@
+/* Catppuccin Mocha — Firefox chrome */
+
+@-moz-document url(chrome://browser/content/browser.xhtml) {
+  :root {
+    --ctp-base: #1e1e2e;
+    --ctp-mantle: #181825;
+    --ctp-crust: #11111b;
+    --ctp-surface0: #313244;
+    --ctp-surface1: #45475a;
+    --ctp-overlay0: #6c7086;
+    --ctp-text: #cdd6f4;
+    --ctp-subtext0: #a6adc8;
+    --ctp-lavender: #b4befe;
+  }
+
+  #navigator-toolbox,
+  #nav-bar,
+  #PersonalToolbar {
+    background: var(--ctp-base) !important;
+    color: var(--ctp-text) !important;
+    border-color: var(--ctp-surface0) !important;
+  }
+
+  #urlbar-background,
+  #searchbar,
+  .searchbar-textbox {
+    background: var(--ctp-surface0) !important;
+    color: var(--ctp-text) !important;
+    border-color: var(--ctp-surface1) !important;
+  }
+
+  #urlbar[focused="true"] > #urlbar-background {
+    border-color: var(--ctp-lavender) !important;
+  }
+
+  #sidebar-box,
+  #sidebar-main,
+  #sidebar-main[expanded] {
+    background: var(--ctp-mantle) !important;
+    color: var(--ctp-text) !important;
+  }
+
+  #TabsToolbar {
+    visibility: collapse !important;
+  }
+
+  toolbarbutton:hover,
+  toolbarbutton[open="true"],
+  .tabbrowser-tab:hover {
+    background: var(--ctp-surface0) !important;
+  }
+
+  .tabbrowser-tab[selected="true"] {
+    color: var(--ctp-lavender) !important;
+  }
+}

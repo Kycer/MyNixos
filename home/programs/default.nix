@@ -1,10 +1,11 @@
 {
   imports = [
     ./fcitx5.nix
-    ./firefox.nix
-    ./foot.nix
+    ./firefox
+    ./foot
     ./git.nix
-    ./neovim.nix
+    ./mark-shot.nix
+    ./nvim
     ./zsh.nix
   ];
 }
