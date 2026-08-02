@@ -8,7 +8,7 @@ in
     home.packages = [
       (pkgs.writeShellScriptBin "mark-shot" ''
         export XDG_SESSION_TYPE=wayland
-        exec ${lib.getExe markShot} "$@"
+        exec ${lib.getExe' markShot "mark-shot"} "$@"
       '')
     ];
   };
