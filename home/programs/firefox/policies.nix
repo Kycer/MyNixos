@@ -13,8 +13,14 @@
       installation_mode = "force_installed";
     };
 
-    "darkreaderapp@gmail.com" = {
+    "addon@darkreader.org" = {
       install_url = "https://addons.mozilla.org/firefox/downloads/latest/darkreader/latest.xpi";
+      installation_mode = "force_installed";
+    };
+
+    # Official Catppuccin Mocha theme with Lavender accent.
+    "{8446b178-c865-4f5c-8ccc-1d7887811ae3}" = {
+      install_url = "https://addons.mozilla.org/firefox/downloads/latest/catppuccin-mocha-lavender-git/latest.xpi";
       installation_mode = "force_installed";
     };
   };

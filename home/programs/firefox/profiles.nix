@@ -56,13 +56,18 @@ let
       "sidebar.visibility" = "always-show";
       "browser.profiles.enabled" = true;
       "browser.profiles.created" = true;
+      "browser.profiles.grouping.enabled" = true;
+      "browser.profiles.profile-management" = true;
+      "browser.profiles.showProfileIndicator" = true;
+      "extensions.activeThemeID" = "{8446b178-c865-4f5c-8ccc-1d7887811ae3}";
+      "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
     };
 
     userChrome = ./userChrome.css;
 
     extensions = {
       force = true;
-      settings."darkreaderapp@gmail.com" = {
+      settings."addon@darkreader.org" = {
         force = true;
         settings = darkReaderSettings;
       };
@@ -70,10 +75,11 @@ let
   };
 in
 {
-  df = commonProfile // {
+  me = commonProfile // {
     id = 0;
     isDefault = true;
     name = "me";
+    path = "me";
     storeId = "a1b2c3d4";
   };
 
@@ -81,6 +87,7 @@ in
     id = 1;
     isDefault = false;
     name = "wk";
+    path = "wk";
     storeId = "b2c3d4e5";
   };
 
@@ -88,6 +95,7 @@ in
     id = 2;
     isDefault = false;
     name = "dv";
+    path = "dv";
     storeId = "c3d4e5f6";
   };
 }
