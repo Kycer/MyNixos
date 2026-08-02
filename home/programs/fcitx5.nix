@@ -6,6 +6,19 @@
   ...
 }:
 
+let
+  profileConfig = {
+    GroupOrder."0" = "Default";
+
+    "Groups/0" = {
+      Name = "Default";
+      "Default Layout" = "us";
+      DefaultIM = "rime";
+    };
+
+    "Groups/0/Items/0".Name = "rime";
+  };
+in
 {
   config = lib.mkIf osConfig.my.programs.fcitx5.enable {
     i18n.inputMethod = {
@@ -36,17 +49,7 @@
             TogglePreedit = "";
           };
 
-          inputMethod = {
-            GroupOrder."0" = "Default";
-
-            "Groups/0" = {
-              Name = "Default";
-              "Default Layout" = "us";
-              DefaultIM = "rime";
-            };
-
-            "Groups/0/Items/0".Name = "rime";
-          };
+          inputMethod = profileConfig;
 
           addons = {
             classicui.globalSection = {
@@ -88,9 +91,12 @@
       };
     };
 
-    # Replace an older user profile so the removed keyboard-us entry does not
-    # survive in ~/.config/fcitx5/profile.
-    xdg.configFile."fcitx5/profile".force = true;
+    # Fcitx5's NixOS module writes the profile to /etc/xdg. Manage the user
+    # copy as well so an old profile cannot reintroduce keyboard-us.
+    xdg.configFile."fcitx5/profile" = {
+      force = true;
+      text = lib.generators.toINI { } profileConfig;
+    };
 
     xdg.dataFile."fcitx5/rime/default.custom.yaml" = {
       force = true;
