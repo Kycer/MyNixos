@@ -22,10 +22,32 @@ in
       profiles = import ./profiles.nix { inherit config; };
     };
 
-    # Firefox 138+ rewrites profiles.ini when its selectable-profile database
-    # changes. Home Manager normally links this file to the read-only
-    # generation, so the next activation would report the rewritten file as a
-    # collision. Force the link to be recreated on every activation.
-    home.file."${lib.removePrefix "${config.home.homeDirectory}/" config.xdg.configHome}/mozilla/firefox/profiles.ini".force = true;
+    # Use Firefox's traditional profile manager at startup. Home Manager's
+    # generated profiles.ini defaults to the last profile, so provide the
+    # classic StartWithLastProfile=0 setting explicitly.
+    home.file."${lib.removePrefix "${config.home.homeDirectory}/" config.xdg.configHome}/mozilla/firefox/profiles.ini" = {
+      force = true;
+      text = ''
+        [General]
+        StartWithLastProfile=0
+        Version=2
+
+        [Profile0]
+        Name=me
+        IsRelative=1
+        Path=me
+        Default=1
+
+        [Profile1]
+        Name=wk
+        IsRelative=1
+        Path=wk
+
+        [Profile2]
+        Name=dv
+        IsRelative=1
+        Path=dv
+      '';
+    };
   };
 }
