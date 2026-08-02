@@ -1,4 +1,4 @@
-/* Catppuccin Mocha — Firefox chrome */
+/* Catppuccin Mocha — Mauve Firefox chrome */
 
 :root {
   --ctp-base: #1e1e2e;
@@ -9,15 +9,21 @@
   --ctp-overlay0: #6c7086;
   --ctp-text: #cdd6f4;
   --ctp-subtext0: #a6adc8;
-  --ctp-lavender: #b4befe;
+  --ctp-mauve: #cba6f7;
 }
 
 #navigator-toolbox,
 #nav-bar,
 #PersonalToolbar {
+  direction: ltr !important;
   background: var(--ctp-base) !important;
   color: var(--ctp-text) !important;
   border-color: var(--ctp-surface0) !important;
+}
+
+#navigator-toolbox > toolbar,
+#nav-bar-customization-target {
+  direction: ltr !important;
 }
 
 #urlbar-background,
@@ -29,7 +35,7 @@
 }
 
 #urlbar[focused="true"] > #urlbar-background {
-  border-color: var(--ctp-lavender) !important;
+  border-color: var(--ctp-mauve) !important;
 }
 
 #sidebar-box,
@@ -50,5 +56,5 @@ toolbarbutton[open="true"],
 }
 
 .tabbrowser-tab[selected="true"] {
-  color: var(--ctp-lavender) !important;
+  color: var(--ctp-mauve) !important;
 }

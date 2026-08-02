@@ -23,7 +23,7 @@ let
       lightSchemeBackgroundColor = "#eff1f5";
       lightSchemeTextColor = "#4c4f69";
       scrollbarColor = "#585b70";
-      selectionColor = "#585b70";
+      selectionColor = "#cba6f7";
       styleSystemControls = true;
       lightColorScheme = "Catppuccin";
       darkColorScheme = "Catppuccin";
@@ -47,6 +47,10 @@ let
       "browser.newtabpage.activity-stream.feeds.topsites" = false;
       "browser.newtabpage.activity-stream.showSponsoredTopSites" = false;
       "browser.tabs.closeWindowWithLastTab" = true;
+      # Reset persisted toolbar customization so the standard LTR order is
+      # restored on the next Firefox start.
+      "browser.uiCustomization.state" = "";
+      "browser.toolbars.bookmarks.visibility" = "never";
       "browser.theme.content-theme" = 1;
       "browser.theme.toolbar-theme" = 1;
       "intl.locale.requested" = "zh-CN";
@@ -54,12 +58,10 @@ let
       "sidebar.revamp" = true;
       "sidebar.verticalTabs" = true;
       "sidebar.visibility" = "always-show";
-      "browser.profiles.enabled" = true;
-      "browser.profiles.created" = true;
-      "browser.profiles.grouping.enabled" = true;
-      "browser.profiles.profile-management" = true;
-      "browser.profiles.showProfileIndicator" = true;
-      "extensions.activeThemeID" = "{8446b178-c865-4f5c-8ccc-1d7887811ae3}";
+      # Use the traditional profiles.ini/Profile Manager workflow. The newer
+      # selectable-profile UI is backed by a separate Firefox-owned database.
+      "browser.profiles.enabled" = false;
+      "extensions.activeThemeID" = "{76aabc99-c1a8-4c1e-832b-d4f2941d5a7a}";
       "toolkit.legacyUserProfileCustomizations.stylesheets" = true;
     };
 
@@ -80,7 +82,6 @@ in
     isDefault = true;
     name = "me";
     path = "me";
-    storeId = "a1b2c3d4";
   };
 
   wk = commonProfile // {
@@ -88,7 +89,6 @@ in
     isDefault = false;
     name = "wk";
     path = "wk";
-    storeId = "b2c3d4e5";
   };
 
   dv = commonProfile // {
@@ -96,6 +96,5 @@ in
     isDefault = false;
     name = "dv";
     path = "dv";
-    storeId = "c3d4e5f6";
   };
 }

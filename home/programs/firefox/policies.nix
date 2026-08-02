@@ -18,9 +18,9 @@
       installation_mode = "force_installed";
     };
 
-    # Official Catppuccin Mocha theme with Lavender accent.
-    "{8446b178-c865-4f5c-8ccc-1d7887811ae3}" = {
-      install_url = "https://addons.mozilla.org/firefox/downloads/latest/catppuccin-mocha-lavender-git/latest.xpi";
+    # Official Catppuccin Mocha theme with Mauve accent.
+    "{76aabc99-c1a8-4c1e-832b-d4f2941d5a7a}" = {
+      install_url = "https://addons.mozilla.org/firefox/downloads/latest/catppuccin-mocha-mauve-git/latest.xpi";
       installation_mode = "force_installed";
     };
   };
