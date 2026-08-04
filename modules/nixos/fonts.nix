@@ -40,8 +40,6 @@
           style = "slight";
         };
 
-        lcdfilter = "default";
-
         subpixel.rgba = "rgb";
         useEmbeddedBitmaps = false;
       };
