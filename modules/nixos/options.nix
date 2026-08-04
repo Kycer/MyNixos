@@ -150,7 +150,7 @@ in
         };
         size = mkOption {
           type = types.int;
-          default = 16;
+          default = 20;
           description = "Interface font size";
         };
       };

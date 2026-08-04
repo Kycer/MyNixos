@@ -8,7 +8,7 @@ set $menu fuzzel
 
 include ~/.config/sway/config.d/*
 
-font pango:JetBrainsMono Nerd Font 11
+font pango:JetBrainsMono Nerd Font 14
 floating_modifier $mod normal
 workspace_auto_back_and_forth yes
 default_border pixel 2
@@ -18,7 +18,8 @@ gaps outer 2
 # Cloudbox runs with WLR_BACKENDS=headless. This output is also captured by WayVNC.
 output HEADLESS-1 {
     mode 1920x1080
-    scale 1.5
+    # Keep headless/WayVNC output at 1:1 to avoid blurry fractional scaling.
+    scale 1
 }
 
 # Export the live Wayland environment and start user services such as Foot and WayVNC.
