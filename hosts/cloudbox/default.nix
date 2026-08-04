@@ -92,7 +92,7 @@
       ];
 
       home = with pkgs; [
-        jetbrains.datagrip
+        beekeeper-studio
         telegram-desktop
         nautilus
         wireplumber
