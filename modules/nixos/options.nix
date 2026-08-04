@@ -145,7 +145,7 @@ in
       font = {
         name = mkOption {
           type = types.str;
-          default = "WenQuanYi Micro Hei Mono";
+          default = "Noto Sans CJK SC";
           description = "Interface font name";
         };
         size = mkOption {

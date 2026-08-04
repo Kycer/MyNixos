@@ -9,8 +9,6 @@
         noto-fonts-cjk-sans
         noto-fonts-cjk-serif
         noto-fonts-color-emoji
-        wqy_microhei
-        wqy_zenhei
         nerd-fonts.fira-code
         nerd-fonts.jetbrains-mono
       ];
@@ -34,11 +32,15 @@
           ];
         };
 
+        antialias = true;
+
         hinting = {
           enable = true;
           autohint = true;
-          style = "none";
+          style = "slight";
         };
+
+        lcdfilter = "default";
 
         subpixel.rgba = "rgb";
         useEmbeddedBitmaps = false;
