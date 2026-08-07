@@ -16,7 +16,17 @@ let
       DefaultIM = "rime";
     };
 
-    "Groups/0/Items/0".Name = "rime";
+    # Keep a real keyboard input method in the group.  Without it there is
+    # nothing for Fcitx to switch to when Rime is toggled off.
+    "Groups/0/Items/0" = {
+      Name = "keyboard-us";
+      Layout = "";
+    };
+
+    "Groups/0/Items/1" = {
+      Name = "rime";
+      Layout = "";
+    };
   };
 in
 {
@@ -41,11 +51,13 @@ in
         waylandFrontend = true;
 
         settings = {
-          # Keep the current Arch configuration: do not provide additional
-          # input-method cycling shortcuts and disable TogglePreedit.
+          # Ctrl+Space remains the usual Rime on/off trigger.  These explicit
+          # bindings also make switching between keyboard-us and Rime work
+          # even when a compositor does not expose Fcitx's tray UI.
           globalOptions.Hotkey = {
-            EnumerateForwardKeys = "";
-            EnumerateBackwardKeys = "";
+            EnumerateWithTriggerKeys = true;
+            EnumerateForwardKeys = "Control+Shift_R";
+            EnumerateBackwardKeys = "Control+Shift_L";
             TogglePreedit = "";
           };
 
@@ -91,18 +103,13 @@ in
       };
     };
 
-    # Fcitx5's NixOS module writes the profile to /etc/xdg. Manage the user
-    # copy as well so an old profile cannot reintroduce keyboard-us.
-    xdg.configFile."fcitx5/profile" = {
-      force = true;
-      text = lib.generators.toINI { } profileConfig;
-    };
-
     xdg.dataFile."fcitx5/rime/default.custom.yaml" = {
       force = true;
       text = ''
         patch:
           __include: rime_ice_suggestion:/
+          __patch:
+             menu/page_size: 8 #候选词个数
           schema_list:
             - schema: double_pinyin_flypy
       '';

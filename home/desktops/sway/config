@@ -31,7 +31,7 @@ exec_always --no-startup-id systemctl --user start sway-session.target
 bindsym $mod+Return exec $term
 bindsym $mod+d exec $menu
 bindsym $mod+Shift+x exec swaylock
-bindsym $mod+Ctrl+Shift+r exec systemctl --user restart fcitx5
+bindsym $mod+Ctrl+Shift+r exec systemctl --user restart fcitx5-daemon
 bindsym $mod+Shift+s exec mark-shot
 bindsym $mod+e exec $term -e yazi
 bindsym $mod+Shift+e exec nautilus
