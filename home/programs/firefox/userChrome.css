@@ -44,6 +44,9 @@
 #searchbar-new .searchmode-switcher,
 #urlbar-searchmode-switcher {
   align-self: center !important;
+  height: 100% !important;
+  min-height: 0 !important;
+  box-sizing: border-box !important;
   align-items: center !important;
   justify-content: center !important;
   margin-block: 0 !important;
@@ -57,6 +60,20 @@
 #searchbar-new .searchmode-switcher > .toolbarbutton-icon,
 #urlbar-searchmode-switcher > .toolbarbutton-icon {
   margin-block: 0 !important;
+}
+
+#searchbar .searchbar-search-button > .toolbarbutton-menu-dropmarker,
+#searchbar .searchmode-switcher > .toolbarbutton-menu-dropmarker,
+#searchbar-new .searchmode-switcher > .toolbarbutton-menu-dropmarker,
+#urlbar-searchmode-switcher > .toolbarbutton-menu-dropmarker,
+#searchbar .searchbar-search-button > .dropmarker-icon,
+#searchbar .searchmode-switcher > .dropmarker-icon,
+#searchbar-new .searchmode-switcher > .dropmarker-icon,
+#urlbar-searchmode-switcher > .dropmarker-icon {
+  align-self: center !important;
+  margin-block: 0 !important;
+  padding-block: 0 !important;
+  vertical-align: middle !important;
 }
 
 #sidebar-box,
