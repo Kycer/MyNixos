@@ -3,12 +3,15 @@
 let
   cfg = config.my.user;
   shells = {
-    bash = pkgs.bashInteractive;
+    fish = pkgs.fish;
     zsh = pkgs.zsh;
   };
 in
 {
-  programs.zsh.enable = cfg.shell == "zsh";
+  programs = {
+    fish.enable = cfg.shell == "fish";
+    zsh.enable = cfg.shell == "zsh";
+  };
 
   users.users.${cfg.name} = {
     isNormalUser = true;

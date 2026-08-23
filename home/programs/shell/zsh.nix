@@ -39,29 +39,10 @@
         ];
       };
 
-      shellAliases = {
-        c = "clear";
-        j = "just --global-justfile";
-        v = "nvim";
-        vi = "nvim";
-        vim = "nvim";
-        vimdiff = "nvim -d";
-      };
-
       initContent = ''
         bindkey '^[[A' history-substring-search-up
         bindkey '^[[B' history-substring-search-down
       '';
-    };
-
-    programs.fzf = {
-      enable = true;
-      enableZshIntegration = true;
-    };
-
-    programs.zoxide = {
-      enable = true;
-      enableZshIntegration = true;
     };
   };
 }

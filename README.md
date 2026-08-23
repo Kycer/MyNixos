@@ -53,7 +53,7 @@ changing `/etc/nixos` or the running system, add `--check-only`.
 After the first switch, start a new login shell or run:
 
 ```bash
-exec zsh -l
+exec "$SHELL" -l
 j switch
 ```
 
@@ -107,6 +107,7 @@ sudo nixos-rebuild switch --flake /etc/nixos#cloudbox
 Edit `hosts/cloudbox/default.nix` to:
 
 - set the real Git email;
+- choose the login shell with `my.user.shell = "zsh"` or `my.user.shell = "fish"`;
 - select `desktop = "niri"` or `"sway"`;
 - enable or disable services and user programs;
 - add host-specific system or Home Manager packages.
@@ -147,9 +148,11 @@ another rebuild. Reload Sway with `Mod+Shift+c`; Niri and Foot may need their
 application or session restarted. Foot runs as a user-level server, and both
 desktop configurations launch terminals with `footclient`.
 
-The login shell is Zsh. It includes Oh My Zsh's Git aliases, autosuggestions,
-syntax highlighting, shared history, substring history search, FZF integration
-and Zoxide. Use `z <part-of-directory-name>` to jump between directories.
+The default login shell is Zsh, and the host can select Fish instead. Both
+shells share the basic aliases, FZF integration and Zoxide. Zsh additionally
+includes Oh My Zsh, autosuggestions, syntax highlighting, shared history and
+substring history search. Use `z <part-of-directory-name>` to jump between
+directories.
 
 ## Global Just recipes
 

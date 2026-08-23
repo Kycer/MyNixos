@@ -25,11 +25,11 @@ in
 
       shell = mkOption {
         type = types.enum [
-          "bash"
           "zsh"
+          "fish"
         ];
         default = "zsh";
-        description = "Login shell for the primary user";
+        description = "Login shell for the primary user (zsh or fish)";
       };
 
       git = {

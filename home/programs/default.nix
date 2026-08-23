@@ -6,6 +6,6 @@
     ./git.nix
     ./mark-shot.nix
     ./nvim
-    ./zsh.nix
+    ./shell
   ];
 }
