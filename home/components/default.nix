@@ -1,6 +1,6 @@
 {
   imports = [
-    ./noctalia-shell
+    ./noctalia
     ./rofi
     ./swaync
     ./waybar

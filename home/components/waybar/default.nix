@@ -1,30 +1,26 @@
-{ config, lib, pkgs, osConfig, ... }:
+{
+  config,
+  lib,
+  osConfig,
+  ...
+}:
 
 let
-  cfg = osConfig.my.desktop;
-  isWaybarEnabled = (cfg.wm != "none") && (cfg.shellStyle == "custom") && (cfg.custom.bar == "waybar");
-  isSway = cfg.wm == "sway";
-  isNiri = cfg.wm == "niri";
+  desktop = osConfig.my.desktop;
+  enabled =
+    desktop.session.enable && desktop.shellStyle == "custom" && desktop.custom.bar == "waybar";
+  adapter = config.my.desktop.session.waybar;
+  baseSettings = builtins.fromJSON (builtins.readFile ./config.jsonc);
+  settings = (builtins.removeAttrs baseSettings adapter.removeModules) // adapter.settings;
 in
 {
-  config = lib.mkIf isWaybarEnabled (lib.mkMerge [
-    {
-      programs.waybar.enable = true;
-      xdg.configFile."waybar".source = config.lib.file.mkOutOfStoreSymlink
-        "${config.home.homeDirectory}/.nixos/home/components/waybar";
-    }
-
-    (lib.mkIf isSway {
-      xdg.configFile."sway/config.d/waybar.conf".text = ''
-        exec_always --no-startup-id sh -c 'pkill -9 -x waybar 2>/dev/null || true; sleep 0.1; exec waybar --config ~/.nixos/home/components/waybar/config.jsonc --style ~/.nixos/home/components/waybar/style.css'
-      '';
-    })
-
-    (lib.mkIf isNiri {
-      xdg.configFile."niri/config.d/waybar.kdl".text = ''
-        spawn-at-startup "sh" "-c" "pkill -9 -x waybar 2>/dev/null || true; sleep 0.1; exec waybar --config ~/.nixos/home/components/waybar/config.jsonc --style ~/.nixos/home/components/waybar/style.css"
-      '';
-    })
-  ]);
+  config = lib.mkIf enabled {
+    programs.waybar = {
+      enable = true;
+      settings = [ settings ];
+      style = ./style.css;
+      systemd.enable = true;
+      systemd.targets = [ config.wayland.systemd.target ];
+    };
+  };
 }
-

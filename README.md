@@ -8,8 +8,9 @@ configuration. The host name and Linux user name are separate settings.
 - `hosts/default.nix`: host inventory.
 - `hosts/<name>/`: host settings and generated hardware configuration.
 - `modules/nixos/`: reusable NixOS modules and the `my.*` interface.
-- `home/`: Home Manager packages and application configuration.
-- `config/`: live, ordinary application configuration files.
+- `home/desktops/`: compositor adapters and generated native configuration.
+- `home/components/`: selectable desktop-shell implementations.
+- `home/programs/` and `home/services/`: Home Manager configuration.
 - `lib/mk-host.nix`: shared host constructor.
 - `justfile`: global NixOS maintenance recipes.
 
@@ -31,7 +32,7 @@ This direct download method requires the GitHub repository to be public. The ins
 
 - clones the repository to `$HOME/.nixos`;
 - temporarily provides Git through `nix shell nixpkgs#git` when Git is not installed;
-- updates the selected host's primary user to the current user;
+- writes the selected host's primary user to ignored `hosts/<host>/installer.nix`;
 - evaluates the flake through a temporary `nix shell nixpkgs#just`;
 - moves an existing `/etc/nixos` to a timestamped backup;
 - creates `/etc/nixos -> $HOME/.nixos`;
@@ -64,11 +65,11 @@ j switch
 
 Copy this directory to `$HOME/.nixos`, then make sure it is owned by the
 current user.
-If the directory is a Git repository, add new files before evaluating the
-flake:
+Create `hosts/cloudbox/installer.nix` with the local login name; the file is
+ignored by Git but included by the explicit `path:` flake reference:
 
-```bash
-git -C "$HOME/.nixos" add --all
+```nix
+{ my.user.name = "your-user"; }
 ```
 
 Build without changing the running system:
@@ -76,18 +77,11 @@ Build without changing the running system:
 ```bash
 sudo nixos-rebuild build \
   --option experimental-features 'nix-command flakes' \
-  --flake "$HOME/.nixos#cloudbox"
+  --flake "path:$HOME/.nixos#cloudbox"
 ```
 
-After the build succeeds:
-
-```bash
-sudo nixos-rebuild switch \
-  --option experimental-features 'nix-command flakes' \
-  --flake "$HOME/.nixos#cloudbox"
-```
-
-To make `/etc/nixos` point to the user-owned configuration, choose an unused
+After the build succeeds, make `/etc/nixos` point to the user-owned
+configuration before the first Home Manager activation. Choose an unused
 backup path and run:
 
 ```bash
@@ -96,10 +90,12 @@ sudo ln -s "$HOME/.nixos" /etc/nixos
 readlink -f /etc/nixos
 ```
 
-Future rebuilds can then use:
+Activate the configuration; future rebuilds use the same command:
 
 ```bash
-sudo nixos-rebuild switch --flake /etc/nixos#cloudbox
+sudo nixos-rebuild switch \
+  --option experimental-features 'nix-command flakes' \
+  --flake path:/etc/nixos#cloudbox
 ```
 
 ## Common changes
@@ -108,16 +104,18 @@ Edit `hosts/cloudbox/default.nix` to:
 
 - set the real Git email;
 - choose the login shell with `my.user.shell = "zsh"` or `my.user.shell = "fish"`;
-- select `desktop = "niri"` or `"sway"`;
+- select `my.desktop.wm = "niri"` or `"sway"`;
 - enable or disable services and user programs;
 - add host-specific system or Home Manager packages.
 
 `modules/nixos/options.nix` declares and validates the reusable `my.*`
 interface. It does not install programs by itself. `home/default.nix` is the
 Home Manager entry point that imports the user-level implementations. The
-Linux login name is set once as `my.user.name` in the host module and is passed
-to Home Manager automatically. Git author name and email are independent and
-remain unset until explicitly configured.
+Linux login name is set once as `my.user.name` and is passed to Home Manager
+automatically. Automated deployments override the placeholder through the
+ignored `hosts/<host>/installer.nix`, so installing a machine no longer
+modifies tracked host configuration. Git author name and email are independent
+and remain unset until explicitly configured.
 
 The default `pkgs` package set tracks `nixos-unstable`. A stable 26.05 package
 set is available as `stablePkgs`, for example:
@@ -130,23 +128,53 @@ set is available as `stablePkgs`, for example:
 }
 ```
 
-## Live application configuration
+## Desktop adapter boundary
 
-Home Manager creates out-of-store links from `~/.config` to the corresponding
-directories below `~/.nixos/config`. These files remain ordinary writable
-files rather than immutable Nix store files:
+Desktop names and imports are discovered automatically. Adding a compositor
+does not require editing the option enum, the desktop import lists, shell
+components, or user services. Add only the matching adapters:
 
-- `config/sway/config`
-- `config/niri/config.kdl`
-- `config/foot/foot.ini`
-- `config/nvim/`
-- `config/gtk-3.0/` and `config/gtk-4.0/`
-- `config/qt5ct/` and `config/qt6ct/`
+- `modules/nixos/desktops/<name>.nix` enables the system compositor and
+  publishes its session target and capabilities;
+- `home/desktops/<name>/default.nix` enables the Home Manager integration and
+  renders shared startup commands and key bindings into native syntax.
 
-After the first `switch`, editing one of these files takes effect without
-another rebuild. Reload Sway with `Mod+Shift+c`; Niri and Foot may need their
-application or session restarted. Foot runs as a user-level server, and both
-desktop configurations launch terminals with `footclient`.
+Components such as Noctalia and Rofi publish desktop-neutral commands through
+`my.desktop.session`. Foot, Polkit, Waybar, and WayVNC consume the published
+session interface rather than comparing `my.desktop.wm` themselves. The
+matching adapter filenames are the only places that introduce a new desktop
+name.
+
+## Application configuration
+
+Niri, Sway, Foot, and Noctalia are managed as Nix data:
+
+- `home/desktops/niri/*.nix` contributes ordered KDL fragments;
+- `home/desktops/sway/default.nix` uses Home Manager's Sway options;
+- `home/programs/foot/default.nix` uses `programs.foot.settings`;
+- `home/components/noctalia/config.toml` provides the Noctalia v5 defaults;
+  Home Manager renders and validates them as
+  `~/.config/noctalia/config.toml`. Noctalia itself comes directly from the
+  default `nixpkgs-unstable` package set, without a separate flake input.
+
+These files require `just switch` after editing. Foot runs as a user systemd
+service, and both compositors launch terminals with `footclient`. Neovim is
+kept as an out-of-store link through `/etc/nixos`, so its Lua configuration can
+still be edited without rebuilding.
+
+To select the modular Niri configuration with Noctalia on a local graphical
+machine, use:
+
+```nix
+my.desktop = {
+  wm = "niri";
+  shellStyle = "noctalia";
+};
+my.remoteDesktop.wayvnc.enable = false;
+```
+
+The current WayVNC implementation is Sway-specific, so it must be disabled
+before selecting Niri.
 
 The default login shell is Zsh, and the host can select Fish instead. Both
 shells share the basic aliases, FZF integration and Zoxide. Zsh additionally
@@ -159,6 +187,9 @@ directories.
 The repository `justfile` is linked to `~/.config/just/justfile`. From the
 flake directory use `just <recipe>`. From any directory use `just -g <recipe>`
 or the Zsh alias `j <recipe>`.
+
+Build and validation recipes never change the checkout or require a network
+pull. Run `just -g pull` explicitly when the repository should be synchronized.
 
 ```bash
 just -g check
@@ -254,10 +285,14 @@ just -g switch
 
 ## Headless Sway and WayVNC
 
-`cloudbox` starts a headless Sway session through greetd. Home Manager starts
-WayVNC when `sway-session.target` becomes active and restarts it after a
-failure. The current test configuration listens on every address and opens TCP
-port 5900:
+`cloudbox` starts a headless Sway session through greetd. The configured
+`my.remoteDesktop.wayvnc.resolution` generates the `HEADLESS-1` output. Home
+Manager starts WayVNC on the session target published by the active desktop
+adapter and restarts it after a failure. Currently only the Sway adapter
+publishes the WayVNC capability.
+
+Unauthenticated WayVNC may only open a firewall port on loopback or on an
+explicit trusted interface. A deliberately unsafe temporary test must opt in:
 
 ```nix
 my.remoteDesktop.wayvnc = {

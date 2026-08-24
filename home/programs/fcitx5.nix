@@ -125,18 +125,21 @@ in
       '';
     };
 
-    # Remove obsolete user-level Rime configuration. Old luna_pinyin schemas
-    # can reference luna_pinyin.dict.yaml, which is not part of Rime-Ice.
-    # Keep user dictionaries intact; build is generated cache data.
+    # One-time migration from the former Luna Pinyin setup. Rebuilding the
+    # generated cache on every Home Manager activation makes activation slow
+    # and needlessly discards a healthy cache.
     home.activation.rimeIceCleanup = lib.hm.dag.entryBefore [ "linkGeneration" ] ''
       rime_dir="${config.xdg.dataHome}/fcitx5/rime"
+      cleanup_stamp="$rime_dir/.nixos-rime-ice-cleanup-v1"
 
-      if [ -d "$rime_dir" ]; then
+      if [ ! -e "$cleanup_stamp" ]; then
+        mkdir -p -- "$rime_dir"
         rm -f -- \
           "$rime_dir/default.yaml" \
           "$rime_dir/luna_pinyin.schema.yaml" \
           "$rime_dir/luna_pinyin.custom.yaml"
         rm -rf -- "$rime_dir/build"
+        touch -- "$cleanup_stamp"
       fi
     '';
   };

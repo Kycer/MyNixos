@@ -9,7 +9,6 @@
   home.packages =
     osConfig.my.packages.home
     ++ (with pkgs; [
-      fzf
       htop
       just
       p7zip

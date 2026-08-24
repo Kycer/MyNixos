@@ -1,25 +1,34 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 let
   wayvnc = config.my.remoteDesktop.wayvnc;
-  exposeGlobally =
-    wayvnc.enable
-    && wayvnc.openFirewall
-    && wayvnc.firewallInterface == null;
-  exposeOnInterface =
-    wayvnc.enable
-    && wayvnc.openFirewall
-    && wayvnc.firewallInterface != null;
+  wayvncIsLoopback =
+    lib.hasPrefix "127." wayvnc.address
+    || builtins.elem wayvnc.address [
+      "::1"
+      "[::1]"
+      "localhost"
+    ];
+  exposeGlobally = wayvnc.enable && wayvnc.openFirewall && wayvnc.firewallInterface == null;
+  exposeOnInterface = wayvnc.enable && wayvnc.openFirewall && wayvnc.firewallInterface != null;
 in
 {
   assertions = [
     {
       assertion =
-        !(wayvnc.address == "0.0.0.0" && wayvnc.openFirewall)
+        !wayvnc.enable
+        || !wayvnc.openFirewall
+        || wayvnc.firewallInterface != null
+        || wayvncIsLoopback
         || wayvnc.insecureTestMode;
       message = ''
-        Public WayVNC exposure requires
-        my.remoteDesktop.wayvnc.insecureTestMode = true.
+        Unauthenticated WayVNC may only be opened on loopback or a trusted
+        firewall interface. Otherwise set insecureTestMode = true explicitly.
       '';
     }
   ];
@@ -42,29 +51,6 @@ in
   environment.systemPackages = lib.optionals config.my.features.wireguard.enable [
     pkgs.wireguard-tools
   ];
-
-  networking.wg-quick.interfaces = lib.mkIf config.my.features.wireguard.enable {
-    wg0 = {
-      address = [ "10.10.0.2/24" ];
-      mtu = 1380;
-      listenPort = config.my.features.wireguard.listenPort;
-      privateKeyFile = "/etc/wireguard/private.key";
-
-      peers = [
-        {
-          publicKey = "RfF2//z3+UR1NAzQmDzMYmG0q5COPGIj9RMi0iH3nFc=";
-          allowedIPs = [ "10.10.0.3/32" ];
-          # endpoint = "vpn.example.com:51820";
-          persistentKeepalive = 25;
-        }
-        {
-          publicKey = "BEBe5n6/JQRL3wC/5HjKusGT4H4MQsvWm6L38MbKEQ4=";
-          allowedIPs = [ "10.10.0.5/32" "10.20.0.0/24" ];
-          persistentKeepalive = 25;
-        }
-      ];
-    };
-  };
 
   networking.firewall.allowedUDPPorts = lib.optionals (
     config.my.features.wireguard.enable && config.my.features.wireguard.openFirewall

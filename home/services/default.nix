@@ -1,6 +1,6 @@
 {
   imports = [
-    ./foot-server.nix
+    ./polkit-agent.nix
     ./wayvnc.nix
   ];
 }

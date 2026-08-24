@@ -1,4 +1,4 @@
-{ config, lib, pkgs, osConfig, ... }:
+{ osConfig, ... }:
 
 let
   t = osConfig.my.theme;
@@ -8,7 +8,6 @@ in
     t.gtkTheme.package
     t.iconTheme.package
     t.cursor.package
-    pkgs.qt6Packages.qt6ct
   ];
 
   gtk = {
@@ -48,7 +47,9 @@ in
 
   qt = {
     enable = true;
-    platformTheme.name = "qt6ct";
+    # Home Manager's qtct adapter installs both qt5ct and qt6ct and exports
+    # the matching plugin paths for applications started by systemd.
+    platformTheme.name = "qtct";
     style.name = "kvantum";
 
     qt5ctSettings = {
@@ -73,9 +74,6 @@ in
       };
     };
   };
-
-
-
   dconf.settings = {
     "org/gnome/desktop/interface" = {
       color-scheme = "prefer-dark";

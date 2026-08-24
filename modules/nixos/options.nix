@@ -2,6 +2,10 @@
 
 let
   inherit (lib) mkEnableOption mkOption types;
+  desktopAdapterFiles = lib.filterAttrs (
+    name: type: name != "default.nix" && type == "regular" && lib.hasSuffix ".nix" name
+  ) (builtins.readDir ./desktops);
+  desktopNames = map (lib.removeSuffix ".nix") (builtins.attrNames desktopAdapterFiles);
 in
 {
   options.my = {
@@ -55,41 +59,71 @@ in
 
     desktop = {
       wm = mkOption {
-        type = types.enum [
-          "none"
-          "niri"
-          "sway"
-        ];
+        type = types.enum ([ "none" ] ++ desktopNames);
         default = "none";
-        description = "Desktop environment/WM enabled on this host";
+        description = "Desktop adapter enabled on this host";
       };
 
       shellStyle = mkOption {
         type = types.enum [
-          "noctalia-shell"
+          "noctalia"
           "custom"
         ];
-        default = "noctalia-shell";
-        description = "Desktop shell style: 'noctalia-shell' (All-in-One) or 'custom' (Modular Waybar/Rofi)";
+        default = "noctalia";
+        description = "Desktop shell style: 'noctalia' (all-in-one) or 'custom' (modular Waybar/Rofi)";
       };
 
       custom = {
         bar = mkOption {
-          type = types.enum [ "waybar" "none" ];
+          type = types.enum [
+            "waybar"
+            "none"
+          ];
           default = "waybar";
           description = "Status bar component when shellStyle == 'custom'";
         };
 
         launcher = mkOption {
-          type = types.enum [ "rofi" "fuzzel" "none" ];
+          type = types.enum [
+            "rofi"
+            "none"
+          ];
           default = "rofi";
-          description = "Launcher component when shellStyle == 'custom'";
+          description = "Launcher implementation when shellStyle == 'custom'";
         };
 
         notification = mkOption {
-          type = types.enum [ "swaync" "dunst" "none" ];
+          type = types.enum [
+            "swaync"
+            "none"
+          ];
           default = "swaync";
-          description = "Notification daemon when shellStyle == 'custom'";
+          description = "Notification daemon implementation when shellStyle == 'custom'";
+        };
+      };
+
+      # Desktop adapters publish their runtime properties here. Callers use
+      # this interface instead of branching on the adapter name.
+      session = {
+        enable = mkOption {
+          type = types.bool;
+          default = false;
+          internal = true;
+          description = "Whether the selected desktop adapter provides a graphical session";
+        };
+
+        systemdTarget = mkOption {
+          type = types.str;
+          default = "graphical-session.target";
+          internal = true;
+          description = "Systemd user target owned by the selected desktop adapter";
+        };
+
+        capabilities = mkOption {
+          type = types.listOf types.str;
+          default = [ ];
+          internal = true;
+          description = "Capabilities implemented by the selected desktop adapter";
         };
       };
     };

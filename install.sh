@@ -163,13 +163,14 @@ fi
 
 host_file="$target/hosts/$host/default.nix"
 [[ -f "$host_file" ]] || die "找不到 host 配置：$host_file"
-grep -q '^[[:space:]]*name = ".*"; # installer:user$' "$host_file" ||
-  die "$host_file 缺少 installer:user 标记"
+installer_module="$target/hosts/$host/installer.nix"
+installer_module_tmp="$(mktemp "$target/hosts/$host/.installer.nix.XXXXXX")"
+trap 'rm -f -- "$installer_module_tmp"' EXIT
 
-info "将 $host 的主用户设置为 $install_user"
-sed -i -E \
-  's/^([[:space:]]*)name = "[^"]*"; # installer:user$/\1name = "'"$install_user"'"; # installer:user/' \
-  "$host_file"
+info "为 $host 写入本机用户覆盖：$install_user"
+printf '{ my.user.name = "%s"; }\n' "$install_user" >"$installer_module_tmp"
+mv -- "$installer_module_tmp" "$installer_module"
+trap - EXIT
 
 export NIXOS_HOST="$host"
 export NIXOS_FLAKE="$target"

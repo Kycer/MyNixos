@@ -2,7 +2,7 @@
   imports = [
     ./options.nix
     ./base.nix
-    ./desktop.nix
+    ./desktops
     ./fonts.nix
     ./home-manager.nix
     ./networking.nix

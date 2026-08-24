@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   config = lib.mkIf config.my.features.fonts.enable {
@@ -11,6 +16,7 @@
         noto-fonts-color-emoji
         nerd-fonts.fira-code
         nerd-fonts.jetbrains-mono
+        wqy_microhei
       ];
 
       fontconfig = {

@@ -3,8 +3,7 @@
 let
   cfg = config.my.user;
   shells = {
-    fish = pkgs.fish;
-    zsh = pkgs.zsh;
+    inherit (pkgs) fish zsh;
   };
 in
 {
@@ -15,7 +14,7 @@ in
 
   users.users.${cfg.name} = {
     isNormalUser = true;
-    extraGroups = cfg.extraGroups;
+    inherit (cfg) extraGroups;
     openssh.authorizedKeys.keys = cfg.authorizedKeys;
     shell = shells.${cfg.shell};
   };

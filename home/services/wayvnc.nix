@@ -1,8 +1,4 @@
-{
-  lib,
-  osConfig,
-  ...
-}:
+{ lib, osConfig, ... }:
 
 let
   cfg = osConfig.my.remoteDesktop.wayvnc;
@@ -12,11 +8,10 @@ in
     services.wayvnc = {
       enable = true;
       autoStart = true;
-      systemdTarget = "sway-session.target";
+      systemdTarget = osConfig.my.desktop.session.systemdTarget;
 
       settings = {
-        address = cfg.address;
-        port = cfg.port;
+        inherit (cfg) address port;
         enable_auth = false;
       };
     };

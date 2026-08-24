@@ -1,11 +1,9 @@
-{ config, ... }:
+{ config, configRoot, ... }:
 
 {
   xdg.configFile = {
     # `just -g <recipe>` uses this file from any working directory.
-    "just/justfile".source =
-      config.lib.file.mkOutOfStoreSymlink
-        "${config.home.homeDirectory}/.nixos/justfile";
+    "just/justfile".source = config.lib.file.mkOutOfStoreSymlink "${configRoot}/justfile";
   };
 
   xdg.userDirs = {

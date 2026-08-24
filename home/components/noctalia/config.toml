@@ -1,0 +1,173 @@
+[accessibility]
+ui_scale = 1.2500000111758709
+
+[backdrop]
+enabled = true
+
+[bar.default]
+background_opacity = 0.89999997988343239
+capsule = true
+center = [ "audio_visualizer" ]
+end = [ "clock", "tray", "group:g1", "group:g2", "battery", "notifications" ]
+margin_ends = 0
+position = "left"
+radius = 0
+scale = 1.2000000104308128
+show_on_workspace_switch = false
+start = [ "control-center", "launcher", "wallpaper", "workspaces", "active_window" ]
+thickness = 40
+
+    [[bar.default.capsule_group]]
+    accordion = true
+    accordion_direction = "end"
+    enabled = true
+    fill = "surface_variant"
+    id = "g1"
+    members = [ "network", "bluetooth" ]
+    opacity = 1.0
+    padding = 6.0
+
+    [[bar.default.capsule_group]]
+    accordion = true
+    accordion_direction = "end"
+    enabled = true
+    fill = "surface_variant"
+    id = "g2"
+    members = [ "volume", "brightness" ]
+    opacity = 1.0
+    padding = 6.0
+
+[desktop_widgets]
+enabled = false
+schema_version = 2
+widget_order = []
+
+    [desktop_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [desktop_widgets.widget]
+
+[location]
+address = "ChangSha"
+
+[lockscreen_widgets]
+schema_version = 2
+widget_order = [ "lockscreen-login-box@eDP-1" ]
+
+    [lockscreen_widgets.grid]
+    cell_size = 16
+    major_interval = 4
+    visible = true
+
+    [lockscreen_widgets.widget."lockscreen-login-box@eDP-1"]
+    box_height = 196.0
+    box_width = 810.0
+    cx = 1024.0
+    cy = 1102.0
+    output = "eDP-1"
+    placement_height = 1280.0
+    placement_width = 2048.0
+    rotation = 0.0
+    type = "login_box"
+
+        [lockscreen_widgets.widget."lockscreen-login-box@eDP-1".settings]
+        background_color = "surface_variant"
+        background_opacity = 0.88
+        background_radius = 12.0
+        center_password_text = false
+        input_opacity = 1.0
+        input_radius = 6.0
+        layout = "regular"
+        show_caps_lock = true
+        show_keyboard_layout = true
+        show_login_button = true
+        show_media = true
+        show_session_buttons = true
+        show_unlock_hint = true
+        show_weather = true
+
+[plugins]
+enabled = []
+
+[shell]
+panel_anchor_bar = "default"
+
+    [shell.launcher]
+    categories = false
+
+        [shell.launcher.dmenu.entry.run]
+        exec = "sh -lc '{query}'"
+        freeform = true
+        global = false
+        glyph = "terminal"
+        label = "Run Command"
+        prefix = "run"
+
+    [shell.panel]
+    open_near_click_clipboard = true
+    session_placement = "floating"
+    session_position = "center"
+    transparency_mode = "soft"
+    wallpaper_placement = "floating"
+    wallpaper_position = "top_center"
+
+    [shell.session]
+    grid = true
+
+[theme]
+builtin = "Catppuccin"
+community_palette = "Catppuccin Mocha Mauve-Lavender"
+mode = "dark"
+source = "community"
+wallpaper_scheme = "m3-content"
+
+[widget.active_window]
+scale = 1.25
+title_scroll = "always"
+
+[widget.audio_visualizer.actions]
+left = "panel-toggle control-center media"
+
+[widget.battery]
+capsule = true
+show_label = false
+
+[widget.brightness]
+show_label = false
+
+[widget.clock]
+capsule = true
+vertical_format = "{:%m %d}\\n-\\n{:%H %M}"
+
+[widget.control-center]
+capsule = true
+glyph = "navigation-filled"
+
+[widget.launcher]
+enabled = false
+
+[widget.media]
+hide_when_no_media = true
+
+[widget.network]
+show_label = false
+
+[widget.notifications]
+capsule = true
+
+[widget.tray]
+drawer = true
+pinned = [ "wechat" ]
+
+[widget.volume]
+show_label = false
+
+[widget.wallpaper]
+enabled = false
+
+[widget.workspaces]
+active_pill_size = 1.7000000000000002
+capsule = true
+show_labels = false
