@@ -66,6 +66,10 @@ boot:
 update:
     nix flake update --flake "path:{{ flake }}"
 
+# 在当前项目创建可组合的开发环境，例如：j dev-init rust node。
+dev-init +$languages:
+    bash "{{ flake }}/scripts/dev-init.sh" "{{ flake }}" "$languages"
+
 # 查看 NixOS 系统历史版本。
 generations:
     sudo nix-env --profile /nix/var/nix/profiles/system --list-generations

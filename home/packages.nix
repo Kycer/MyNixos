@@ -12,14 +12,8 @@
       htop
       just
       p7zip
-      pciutils
-      prettierd
       ripgrep
-      shfmt
-      stylua
-      taplo
       unzip
-      usbutils
       xz
       zip
     ])

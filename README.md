@@ -201,6 +201,42 @@ includes Oh My Zsh, autosuggestions, syntax highlighting, shared history and
 substring history search. Use `z <part-of-directory-name>` to jump between
 directories.
 
+## Project development environments
+
+Language toolchains are provided by project-local Flakes instead of the host
+configuration. From a new or existing project directory that does not already
+contain a Flake, pass one or more languages to the shared generator:
+
+```bash
+j dev-init rust
+j dev-init rust node
+j dev-init python node
+```
+
+The command creates `flake.nix`, `flake.lock`, and `.envrc` in the current
+directory. Language package groups and shell attributes are maintained in
+`lib/dev-language-tools.nix`; the generator merges the selected entries into a
+single development shell. Commit all three generated files with the project,
+then approve the directory once:
+
+```bash
+git add flake.nix flake.lock .envrc
+direnv allow
+```
+
+Home Manager enables Direnv with the nix-direnv integration, so the pinned
+environment is loaded and unloaded automatically as the shell enters and leaves
+the project directory. `nix develop` remains available when explicit entry is
+useful.
+
+The nix-direnv cache directory `.direnv/` is ignored globally by the managed
+Git configuration.
+
+The generated Flake supports `x86_64-linux` and `aarch64-linux`. Available
+language names are `rust`, `go`, `node`, and `python`. Add project-specific
+native libraries and tools to the generated `packages` list rather than to the
+host configuration.
+
 ## Global Just recipes
 
 The repository `justfile` is linked to `~/.config/just/justfile`. From the

@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 {
   time.timeZone = "Asia/Shanghai";
@@ -13,7 +18,15 @@
 
   networking.networkmanager.enable = true;
 
-  environment.systemPackages = config.my.packages.system;
+  environment.systemPackages =
+    config.my.packages.system
+    ++ (with pkgs; [
+      gcc
+      gnumake
+      pciutils
+      pkg-config
+      usbutils
+    ]);
 
   security.rtkit.enable = config.my.features.audio.enable;
   services.pipewire = lib.mkIf config.my.features.audio.enable {

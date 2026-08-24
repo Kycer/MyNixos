@@ -1,5 +1,6 @@
 {
   imports = [
+    ./direnv.nix
     ./fcitx5.nix
     ./firefox
     ./foot

@@ -7,6 +7,7 @@ in
   config = lib.mkIf osConfig.my.programs.git.enable {
     programs.git = {
       enable = true;
+      ignores = [ ".direnv/" ];
 
       settings = {
         init.defaultBranch = cfg.defaultBranch;
