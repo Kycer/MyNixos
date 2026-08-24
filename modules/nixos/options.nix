@@ -210,6 +210,37 @@ in
       };
     };
 
+    flatpak = {
+      enable = mkEnableOption "host-scoped Flatpak applications";
+
+      remotes = mkOption {
+        type = types.attrsOf (
+          types.submodule {
+            options = {
+              location = mkOption {
+                type = types.str;
+                description = "Repository or .flatpakrepo URL used to add the remote";
+              };
+
+              url = mkOption {
+                type = types.nullOr types.str;
+                default = null;
+                description = "Optional repository URL applied after importing the remote metadata";
+              };
+            };
+          }
+        );
+        default = { };
+        description = "System-wide Flatpak remotes declared by this host";
+      };
+
+      packages = mkOption {
+        type = types.attrsOf (types.listOf types.str);
+        default = { };
+        description = "Flatpak application IDs grouped by their system remote";
+      };
+    };
+
     programs = {
       fcitx5.enable = mkEnableOption "Fcitx5 user configuration";
 

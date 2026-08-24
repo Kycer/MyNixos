@@ -25,6 +25,8 @@ curl -fsSL https://raw.githubusercontent.com/Kycer/MyNixos/main/install.sh |
   bash -s -- \
     --repo https://github.com/Kycer/MyNixos.git \
     --host cloudbox \
+    --git-name "Your Name" \
+    --git-email "you@example.com" \
     --yes
 ```
 
@@ -32,7 +34,8 @@ This direct download method requires the GitHub repository to be public. The ins
 
 - clones the repository to `$HOME/.nixos`;
 - temporarily provides Git through `nix shell nixpkgs#git` when Git is not installed;
-- writes the selected host's primary user to ignored `hosts/<host>/installer.nix`;
+- writes the selected host's primary user and Git identity to ignored
+  `hosts/<host>/installer.nix`;
 - evaluates the flake through a temporary `nix shell nixpkgs#just`;
 - moves an existing `/etc/nixos` to a timestamped backup;
 - creates `/etc/nixos -> $HOME/.nixos`;
@@ -65,11 +68,20 @@ j switch
 
 Copy this directory to `$HOME/.nixos`, then make sure it is owned by the
 current user.
-Create `hosts/cloudbox/installer.nix` with the local login name; the file is
-ignored by Git but included by the explicit `path:` flake reference:
+Create `hosts/cloudbox/installer.nix` with the local login name and Git
+identity; the file is ignored by Git but included by the explicit `path:`
+flake reference:
 
 ```nix
-{ my.user.name = "your-user"; }
+{
+  my.user = {
+    name = "your-user";
+    git = {
+      name = "Your Name";
+      email = "you@example.com";
+    };
+  };
+}
 ```
 
 Build without changing the running system:
@@ -100,13 +112,14 @@ sudo nixos-rebuild switch \
 
 ## Common changes
 
-Edit `hosts/cloudbox/default.nix` to:
+Host-specific settings are grouped by responsibility under `hosts/cloudbox`:
 
-- set the real Git email;
-- choose the login shell with `my.user.shell = "zsh"` or `my.user.shell = "fish"`;
-- select `my.desktop.wm = "niri"` or `"sway"`;
-- enable or disable services and user programs;
-- add host-specific system or Home Manager packages.
+- use `user.nix` for the Git identity, login shell, groups, and SSH keys;
+- use `desktop.nix` to select the desktop and enable desktop programs;
+- use `flatpak.nix` for host-specific Flatpak remotes and applications;
+- use `networking.nix` for WireGuard and remote desktop settings;
+- use `packages.nix` for host-specific system and Home Manager packages;
+- keep boot settings and `system.stateVersion` in `default.nix`.
 
 `modules/nixos/options.nix` declares and validates the reusable `my.*`
 interface. It does not install programs by itself. `home/default.nix` is the
@@ -114,8 +127,9 @@ Home Manager entry point that imports the user-level implementations. The
 Linux login name is set once as `my.user.name` and is passed to Home Manager
 automatically. Automated deployments override the placeholder through the
 ignored `hosts/<host>/installer.nix`, so installing a machine no longer
-modifies tracked host configuration. Git author name and email are independent
-and remain unset until explicitly configured.
+modifies tracked host configuration. Git author name and email are independent;
+the installer accepts `--git-name` and `--git-email`, falling back to the
+existing global Git configuration when those options are omitted.
 
 The default `pkgs` package set tracks `nixos-unstable`. A stable 26.05 package
 set is available as `stablePkgs`, for example:
@@ -176,6 +190,11 @@ my.remoteDesktop.wayvnc.enable = false;
 The current WayVNC implementation is Sway-specific, so it must be disabled
 before selecting Niri.
 
+Flatpak itself is managed by `modules/nixos/flatpak.nix`, while each host owns
+its remote and application lists through `my.flatpak`. Applications are
+installed system-wide only on hosts that enable this option; manually installed
+Flatpak applications are left untouched.
+
 The default login shell is Zsh, and the host can select Fish instead. Both
 shells share the basic aliases, FZF integration and Zoxide. Zsh additionally
 includes Oh My Zsh, autosuggestions, syntax highlighting, shared history and
@@ -227,7 +246,7 @@ These commands do not modify the NixOS configuration.
 ### Packages for the cloudbox user
 
 Add user applications to `my.packages.home` in
-`hosts/cloudbox/default.nix`:
+`hosts/cloudbox/packages.nix`:
 
 ```nix
 packages = {

@@ -11,6 +11,8 @@ host="$default_host"
 target="$default_target"
 branch=""
 install_user="${USER:-$(id -un)}"
+git_name="${GIT_AUTHOR_NAME:-}"
+git_email="${GIT_AUTHOR_EMAIL:-}"
 assume_yes=false
 update_checkout=false
 check_only=false
@@ -27,6 +29,8 @@ usage() {
   --branch <名称>    克隆指定分支
   --target <路径>    配置安装目录，默认：$default_target
   --user <用户名>    写入 host 的主用户，默认：$install_user
+  --git-name <名称>  写入 Git 提交者名称；默认读取 Git 全局配置
+  --git-email <邮箱> 写入 Git 提交者邮箱；默认读取 Git 全局配置
   --update           对已存在的 Git 仓库执行 git pull --ff-only
   --check-only       只克隆/更新并检查配置，不修改 /etc/nixos，不切换系统
   -y, --yes          不询问确认，直接执行
@@ -85,6 +89,16 @@ while (($# > 0)); do
       install_user="$2"
       shift 2
       ;;
+    --git-name)
+      (($# >= 2)) || die "--git-name 缺少参数"
+      git_name="$2"
+      shift 2
+      ;;
+    --git-email)
+      (($# >= 2)) || die "--git-email 缺少参数"
+      git_email="$2"
+      shift 2
+      ;;
     --update)
       update_checkout=true
       shift
@@ -131,6 +145,31 @@ run_git() {
   "${git_command[@]}" "$@"
 }
 
+if [[ -z "$git_name" ]]; then
+  git_name="$(run_git config --global --get user.name 2>/dev/null || true)"
+fi
+if [[ -z "$git_email" ]]; then
+  git_email="$(run_git config --global --get user.email 2>/dev/null || true)"
+fi
+
+nix_string() {
+  local value="$1"
+  value="${value//\\/\\\\}"
+  value="${value//\"/\\\"}"
+  value="${value//$'\n'/\\n}"
+  value="${value//$'\r'/\\r}"
+  value="${value//$'\t'/\\t}"
+  printf '"%s"' "$value"
+}
+
+nix_optional_string() {
+  if [[ -n "$1" ]]; then
+    nix_string "$1"
+  else
+    printf 'null'
+  fi
+}
+
 script_dir=""
 script_source="${BASH_SOURCE[0]-}"
 if [[ -n "$script_source" ]]; then
@@ -167,8 +206,18 @@ installer_module="$target/hosts/$host/installer.nix"
 installer_module_tmp="$(mktemp "$target/hosts/$host/.installer.nix.XXXXXX")"
 trap 'rm -f -- "$installer_module_tmp"' EXIT
 
-info "为 $host 写入本机用户覆盖：$install_user"
-printf '{ my.user.name = "%s"; }\n' "$install_user" >"$installer_module_tmp"
+info "为 $host 写入本机用户和 Git 身份覆盖：$install_user"
+{
+  printf '{\n'
+  printf '  my.user = {\n'
+  printf '    name = %s;\n' "$(nix_string "$install_user")"
+  printf '    git = {\n'
+  printf '      name = %s;\n' "$(nix_optional_string "$git_name")"
+  printf '      email = %s;\n' "$(nix_optional_string "$git_email")"
+  printf '    };\n'
+  printf '  };\n'
+  printf '}\n'
+} >"$installer_module_tmp"
 mv -- "$installer_module_tmp" "$installer_module"
 trap - EXIT
 
