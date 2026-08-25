@@ -47,7 +47,7 @@ it first and then run the local installer:
 ```bash
 nix --extra-experimental-features 'nix-command flakes' \
   shell nixpkgs#git --command \
-  git clone git@github.com:Kycer/MyNixos.git "$HOME/.nixos"
+  git clone --recurse-submodules git@github.com:Kycer/MyNixos.git "$HOME/.nixos"
 "$HOME/.nixos/install.sh" --host cloudbox --yes
 ```
 
@@ -172,9 +172,37 @@ Niri, Sway, Foot, and Noctalia are managed as Nix data:
   default `nixpkgs-unstable` package set, without a separate flake input.
 
 These files require `just switch` after editing. Foot runs as a user systemd
-service, and both compositors launch terminals with `footclient`. Neovim is
-kept as an out-of-store link through `/etc/nixos`, so its Lua configuration can
-still be edited without rebuilding.
+service, and both compositors launch terminals with `footclient`.
+
+Neovim configuration is the `Kycer/nvim` Git submodule at
+`home/programs/nvim/config`. Home Manager links that complete worktree to
+`~/.config/nvim` through `/etc/nixos`, so Lua changes take effect immediately
+without rebuilding. Pull upstream changes and record the new pinned commit in
+this repository with:
+
+```bash
+j nvim-pull
+git -C "$HOME/.nixos" add home/programs/nvim/config
+git -C "$HOME/.nixos" commit -m 'chore(nvim): update config'
+```
+
+Files edited through `~/.config/nvim` belong to the standalone nvim repository.
+Run `j nvim-pull` once after a fresh clone so the submodule is on `main` rather
+than a detached HEAD. Commit and push changes there first, then commit its new
+pointer in MyNixos:
+
+```bash
+git -C "$HOME/.nixos/home/programs/nvim/config" add .
+git -C "$HOME/.nixos/home/programs/nvim/config" commit -m 'describe the nvim change'
+git -C "$HOME/.nixos/home/programs/nvim/config" push
+
+git -C "$HOME/.nixos" add home/programs/nvim/config
+git -C "$HOME/.nixos" commit -m 'chore(nvim): update config'
+```
+
+After an older clone, initialize missing submodules once with
+`git submodule update --init --recursive`. The installer and `j pull` do this
+automatically.
 
 To select the modular Niri configuration with Noctalia on a local graphical
 machine, use:
@@ -250,6 +278,8 @@ pull. Run `just -g pull` explicitly when the repository should be synchronized.
 just -g check
 just -g build
 just -g switch
+just -g nvim-pull
+just -g nvim-status
 just -g generations
 just -g clean-shell
 just -g gc 30d

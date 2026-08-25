@@ -19,14 +19,9 @@ in
       };
     };
 
-    xdg.configFile = {
-      "nvim/init.lua".source =
-        config.lib.file.mkOutOfStoreSymlink "${configRoot}/home/programs/nvim/init.lua";
-      "nvim/lazy-lock.json".source =
-        config.lib.file.mkOutOfStoreSymlink "${configRoot}/home/programs/nvim/lazy-lock.json";
-      "nvim/lua".source = config.lib.file.mkOutOfStoreSymlink "${configRoot}/home/programs/nvim/lua";
-      "nvim/stylua.toml".source =
-        config.lib.file.mkOutOfStoreSymlink "${configRoot}/home/programs/nvim/stylua.toml";
-    };
+    # Keep the standalone nvim repository editable. Home Manager links the
+    # complete submodule worktree instead of copying it into the Nix store.
+    xdg.configFile."nvim".source =
+      config.lib.file.mkOutOfStoreSymlink "${configRoot}/home/programs/nvim/config";
   };
 }

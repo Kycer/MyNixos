@@ -183,7 +183,7 @@ if [[ ! -e "$target" ]]; then
 
   [[ -n "$repo_url" ]] || die "目标目录不存在，请通过 --repo 指定 Git 仓库"
 
-  clone_args=(clone)
+  clone_args=(clone --recurse-submodules)
   if [[ -n "$branch" ]]; then
     clone_args+=(--branch "$branch")
   fi
@@ -199,6 +199,10 @@ elif "$update_checkout"; then
 else
   info "使用现有配置：$target"
 fi
+
+info "初始化并同步 Git submodule"
+run_git -C "$target" submodule sync --recursive
+run_git -C "$target" submodule update --init --recursive
 
 host_file="$target/hosts/$host/default.nix"
 [[ -f "$host_file" ]] || die "找不到 host 配置：$host_file"

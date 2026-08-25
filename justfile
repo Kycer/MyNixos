@@ -10,6 +10,7 @@ pull:
     set -Eeuo pipefail
 
     repo="{{ flake }}"
+    nvim_repo="$repo/home/programs/nvim/config"
     stashed=false
 
     if ((EUID == 0)); then
@@ -18,6 +19,20 @@ pull:
     fi
 
     git -C "$repo" rev-parse --is-inside-work-tree >/dev/null
+
+    if git -C "$nvim_repo" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+      if [[ -n "$(git -C "$nvim_repo" status --porcelain --untracked-files=normal)" ]]; then
+        echo "错误：nvim 子模块存在未提交改动；请先提交或暂存，再运行 pull。" >&2
+        exit 1
+      fi
+
+      pinned="$(git -C "$repo" rev-parse HEAD:home/programs/nvim/config 2>/dev/null || true)"
+      checked_out="$(git -C "$nvim_repo" rev-parse HEAD)"
+      if [[ -n "$pinned" && "$checked_out" != "$pinned" ]]; then
+        echo "错误：nvim 子模块提交尚未记录到 MyNixos；请先提交 submodule 指针。" >&2
+        exit 1
+      fi
+    fi
 
     restore_stash() {
       if [[ "$stashed" == true ]]; then
@@ -39,8 +54,66 @@ pull:
     echo "==> 拉取远程配置"
     git -C "$repo" pull --ff-only
 
+    echo "==> 同步子模块到当前配置固定的提交"
+    git -C "$repo" submodule sync --recursive
+    git -C "$repo" submodule update --init --recursive
+
     restore_stash
     trap - EXIT
+
+# 将 nvim 切换到 main 并快进；之后需在 MyNixos 提交 submodule 指针。
+nvim-pull:
+    #!/usr/bin/env bash
+    set -Eeuo pipefail
+
+    repo="{{ flake }}"
+    nvim_repo="$repo/home/programs/nvim/config"
+
+    if ((EUID == 0)); then
+      echo "错误：请使用配置仓库所属的普通用户运行 nvim-pull。" >&2
+      exit 1
+    fi
+
+    git -C "$repo" submodule sync --recursive
+    git -C "$repo" submodule update --init --recursive -- home/programs/nvim/config
+
+    if [[ -n "$(git -C "$nvim_repo" status --porcelain --untracked-files=normal)" ]]; then
+      echo "错误：nvim 仓库存在未提交改动，请先提交或暂存。" >&2
+      exit 1
+    fi
+
+    branch="$(git -C "$nvim_repo" symbolic-ref --quiet --short HEAD || true)"
+    if [[ -z "$branch" ]]; then
+      head="$(git -C "$nvim_repo" rev-parse HEAD)"
+      if git -C "$nvim_repo" show-ref --verify --quiet refs/heads/main; then
+        main="$(git -C "$nvim_repo" rev-parse main)"
+        if git -C "$nvim_repo" merge-base --is-ancestor "$head" "$main"; then
+          git -C "$nvim_repo" switch main
+        elif git -C "$nvim_repo" merge-base --is-ancestor "$main" "$head"; then
+          git -C "$nvim_repo" branch --force main "$head"
+          git -C "$nvim_repo" switch main
+        else
+          echo "错误：分离的 HEAD 与本地 main 已分叉，请在 nvim 仓库中手动处理。" >&2
+          exit 1
+        fi
+      else
+        git -C "$nvim_repo" switch --create main
+      fi
+    elif [[ "$branch" != "main" ]]; then
+      echo "错误：nvim 当前位于分支 $branch；请先切换或合并到 main。" >&2
+      exit 1
+    fi
+
+    git -C "$nvim_repo" pull --ff-only origin main
+    echo
+    echo "nvim 已更新。请检查后在 MyNixos 中记录新的 submodule 提交："
+    echo "  git -C \"$repo\" add home/programs/nvim/config"
+    echo "  git -C \"$repo\" commit -m 'chore(nvim): update config'"
+
+# 同时查看 MyNixos 与独立 nvim 仓库的状态。
+nvim-status:
+    @git -C "{{ flake }}" status --short
+    @git -C "{{ flake }}/home/programs/nvim/config" status --short --branch
 
 # 检查 Flake 输出能否正常求值。同步仓库请显式运行 pull。
 check:

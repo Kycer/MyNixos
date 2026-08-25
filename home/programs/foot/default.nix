@@ -9,7 +9,8 @@
       settings = {
         main = {
           font = "FiraCode Nerd Font Mono:size=20";
-          pad = "8x8";
+          pad = "0x0 center";
+          line-height = 22;
         };
 
         url.launch = "xdg-open \${url}";
