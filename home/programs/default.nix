@@ -8,5 +8,6 @@
     ./mark-shot.nix
     ./nvim
     ./shell
+    ./tmux.nix
   ];
 }
