@@ -31,6 +31,7 @@
     mtu = 1380;
     listenPort = config.my.features.wireguard.listenPort;
     privateKeyFile = "/etc/wireguard/private.key";
+    generatePrivateKeyFile = true;
 
     peers = [
       {

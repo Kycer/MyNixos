@@ -397,6 +397,17 @@ port 5900 exposed to the public Internet. For an SSH-only test, bind WayVNC to
 ssh -L 5900:127.0.0.1:5900 "$USER"@cloudbox
 ```
 
+The `wg0` configuration generates `/etc/wireguard/private.key` automatically
+before starting the tunnel when the file is missing. Existing keys are preserved.
+To retain the same WireGuard identity after reinstalling, restore the original
+private key to that path with root ownership and mode `0600` before the first
+switch. Otherwise, a new key is generated and the peers must be updated with
+the new public key. Show the public key with:
+
+```bash
+sudo sh -c 'wg pubkey < /etc/wireguard/private.key'
+```
+
 After WireGuard is configured, bind WayVNC to the cloudbox WireGuard address
 and restrict the firewall rule to its interface:
 
