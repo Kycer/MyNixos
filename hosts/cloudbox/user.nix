@@ -8,7 +8,7 @@
       "wheel"
       "networkmanager"
     ];
-    shell = "zsh";
+    shell = "fish";
 
     # Public keys are safe to keep in the flake. Never put private keys here.
     authorizedKeys = [
