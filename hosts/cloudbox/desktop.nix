@@ -21,7 +21,10 @@
       git.enable = true;
       neovim.enable = true;
       networkTools.enable = true;
-      rustdesk.enable = true;
+      rustdesk = {
+        enable = true;
+        autoStart = true;
+      };
     };
   };
 }

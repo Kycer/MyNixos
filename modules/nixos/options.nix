@@ -267,7 +267,10 @@ in
       };
 
       networkTools.enable = mkEnableOption "user network diagnostic tools";
-      rustdesk.enable = mkEnableOption "the RustDesk Flutter desktop application";
+      rustdesk = {
+        enable = mkEnableOption "the RustDesk Flutter desktop application";
+        autoStart = mkEnableOption "the RustDesk server with the desktop session";
+      };
     };
 
     sudo.passwordlessPowerCommands = mkOption {

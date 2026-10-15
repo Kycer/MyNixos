@@ -201,7 +201,11 @@ Host-specific settings are grouped by responsibility under `hosts/cloudbox`:
 Set `my.programs.rustdesk.enable = true` in a host's `desktop.nix` to install
 `rustdesk-flutter` for its primary user. This defaults to false and is enabled
 for cloudbox. The Home Manager implementation is `home/programs/rustdesk.nix`.
-The option controls package installation only.
+The option controls package installation only. Set
+`my.programs.rustdesk.autoStart = true` to also run `rustdesk --server` as a
+user service with the desktop session; this is enabled for cloudbox. The
+server process allows RustDesk to use the ScreenCast portal supported by
+Sway's wlr backend. Screen selection is still handled by the portal.
 
 `modules/nixos/options.nix` declares and validates the reusable `my.*`
 interface. It does not install programs by itself. `home/default.nix` is the
