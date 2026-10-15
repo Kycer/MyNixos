@@ -267,6 +267,7 @@ in
       };
 
       networkTools.enable = mkEnableOption "user network diagnostic tools";
+      rustdesk.enable = mkEnableOption "the RustDesk Flutter desktop application";
     };
 
     sudo.passwordlessPowerCommands = mkOption {
@@ -274,8 +275,6 @@ in
       default = false;
       description = "Allow wheel to suspend, reboot, and power off without a password";
     };
-
-    remoteDesktop.rustdesk.enable = mkEnableOption "RustDesk autostart with the primary user's desktop session";
 
     remoteDesktop.wayvnc = {
       enable = mkEnableOption "a WayVNC remote desktop";
