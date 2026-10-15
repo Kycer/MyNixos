@@ -5,6 +5,7 @@
   my.packages.home = with pkgs; [
     telegram-desktop
     nautilus
+    rustdesk
     yazi
   ];
 }
