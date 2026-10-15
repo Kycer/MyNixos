@@ -12,6 +12,8 @@ pull:
     repo="{{ flake }}"
     nvim_repo="$repo/home/programs/nvim/config"
     stashed=false
+    hardware_files=()
+    hardware_backups=()
 
     if ((EUID == 0)); then
       echo "错误：请使用配置仓库所属的普通用户运行 pull。" >&2
@@ -42,7 +44,39 @@ pull:
       fi
     }
 
-    trap restore_stash EXIT
+    restore_hardware() {
+      local index
+      for index in "${!hardware_files[@]}"; do
+        if [[ ! -e "${hardware_files[$index]}" ]]; then
+          cp -- "${hardware_backups[$index]}" "${hardware_files[$index]}" || {
+            echo "错误：硬件配置备份保留在 ${hardware_backups[$index]}" >&2
+            return 1
+          }
+        fi
+        rm -- "${hardware_backups[$index]}"
+      done
+      hardware_files=()
+      hardware_backups=()
+    }
+
+    restore_on_exit() {
+      local status=$?
+      restore_stash || status=$?
+      restore_hardware || status=$?
+      exit "$status"
+    }
+
+    trap restore_on_exit EXIT
+
+    # The first pull that stops tracking these files can delete them.
+    # Keep backups outside the checkout so stash cannot capture them.
+    for hardware_file in "$repo"/hosts/*/hardware-configuration.nix; do
+      [[ -f "$hardware_file" ]] || continue
+      hardware_backup="$(mktemp)"
+      cp -- "$hardware_file" "$hardware_backup"
+      hardware_files+=("$hardware_file")
+      hardware_backups+=("$hardware_backup")
+    done
 
     if [[ -n "$(git -C "$repo" status --porcelain --untracked-files=normal)" ]]; then
       echo "==> 暂存本地改动"
@@ -59,6 +93,7 @@ pull:
     git -C "$repo" submodule update --init --recursive
 
     restore_stash
+    restore_hardware
     trap - EXIT
 
 # 将 nvim 切换到 main 并快进；之后需在 MyNixos 提交 submodule 指针。

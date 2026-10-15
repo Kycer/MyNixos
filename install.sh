@@ -13,6 +13,7 @@ branch=""
 install_user="${USER:-$(id -un)}"
 git_name="${GIT_AUTHOR_NAME:-}"
 git_email="${GIT_AUTHOR_EMAIL:-}"
+hardware_config=""
 assume_yes=false
 update_checkout=false
 check_only=false
@@ -31,6 +32,7 @@ usage() {
   --user <用户名>    写入 host 的主用户，默认：$install_user
   --git-name <名称>  写入 Git 提交者名称；默认读取 Git 全局配置
   --git-email <邮箱> 写入 Git 提交者邮箱；默认读取 Git 全局配置
+  --hardware-config <路径> 使用指定的本机硬件配置；已有 host 硬件配置默认保留
   --update           对已存在的 Git 仓库执行 git pull --ff-only
   --check-only       只克隆/更新并检查配置，不修改 /etc/nixos，不切换系统
   -y, --yes          不询问确认，直接执行
@@ -97,6 +99,12 @@ while (($# > 0)); do
     --git-email)
       (($# >= 2)) || die "--git-email 缺少参数"
       git_email="$2"
+      shift 2
+      ;;
+    --hardware-config)
+      (($# >= 2)) || die "--hardware-config 缺少参数"
+      [[ -n "$2" ]] || die "--hardware-config 路径不能为空"
+      hardware_config="$2"
       shift 2
       ;;
     --update)
@@ -194,8 +202,31 @@ if [[ ! -e "$target" ]]; then
 elif [[ ! -d "$target/.git" ]]; then
   die "目标已存在但不是 Git 仓库：$target"
 elif "$update_checkout"; then
+  hardware_before_update="$target/hosts/$host/hardware-configuration.nix"
+  hardware_update_backup=""
+  if [[ -f "$hardware_before_update" ]]; then
+    hardware_update_backup="$(mktemp)"
+    cp -- "$hardware_before_update" "$hardware_update_backup"
+  fi
+
+  restore_hardware_after_update() {
+    if [[ -n "$hardware_update_backup" ]]; then
+      if [[ ! -e "$hardware_before_update" ]]; then
+        cp -- "$hardware_update_backup" "$hardware_before_update" || {
+          info "硬件配置备份保留在：$hardware_update_backup"
+          return 1
+        }
+      fi
+      rm -- "$hardware_update_backup"
+      hardware_update_backup=""
+    fi
+  }
+
+  trap restore_hardware_after_update EXIT
   info "更新现有配置"
   run_git -C "$target" pull --ff-only
+  restore_hardware_after_update
+  trap - EXIT
 else
   info "使用现有配置：$target"
 fi
@@ -206,6 +237,38 @@ run_git -C "$target" submodule update --init --recursive
 
 host_file="$target/hosts/$host/default.nix"
 [[ -f "$host_file" ]] || die "找不到 host 配置：$host_file"
+
+# Capture the machine's hardware before replacing /etc/nixos with the checkout.
+hardware_module="$target/hosts/$host/hardware-configuration.nix"
+if [[ -z "$hardware_config" && -f "$hardware_module" ]]; then
+  [[ -s "$hardware_module" ]] || die "本机硬件配置为空：$hardware_module"
+  info "保留现有本机硬件配置：$hardware_module"
+else
+  if [[ -n "$hardware_config" ]]; then
+    hardware_config="${hardware_config/#\~/$HOME}"
+    [[ -r "$hardware_config" && -s "$hardware_config" ]] ||
+      die "指定的硬件配置不存在、不可读或为空：$hardware_config"
+  elif [[ -r /etc/nixos/hardware-configuration.nix && -s /etc/nixos/hardware-configuration.nix ]]; then
+    hardware_config=/etc/nixos/hardware-configuration.nix
+  else
+    command -v nixos-generate-config >/dev/null ||
+      die "找不到本机硬件配置或 nixos-generate-config；请通过 --hardware-config 指定配置"
+  fi
+
+  hardware_module_tmp="$(mktemp "$target/hosts/$host/.hardware-configuration.nix.XXXXXX")"
+  trap 'rm -f -- "$hardware_module_tmp"' EXIT
+  if [[ -n "$hardware_config" ]]; then
+    info "复制本机硬件配置：$hardware_config"
+    cp -- "$hardware_config" "$hardware_module_tmp"
+  else
+    info "生成当前已安装系统的硬件配置"
+    sudo nixos-generate-config --show-hardware-config >"$hardware_module_tmp"
+  fi
+  [[ -s "$hardware_module_tmp" ]] || die "生成的硬件配置为空"
+  mv -- "$hardware_module_tmp" "$hardware_module"
+  trap - EXIT
+fi
+
 installer_module="$target/hosts/$host/installer.nix"
 installer_module_tmp="$(mktemp "$target/hosts/$host/.installer.nix.XXXXXX")"
 trap 'rm -f -- "$installer_module_tmp"' EXIT
@@ -266,6 +329,6 @@ info "构建并切换 NixOS"
 run_just switch
 
 printf '\n安装完成。\n'
-printf '重新登录或执行 exec zsh -l 后，可以使用：\n'
+printf '重新登录后，可以使用：\n'
 printf '  j switch\n'
 printf '  just -g switch\n'

@@ -6,7 +6,7 @@ configuration. The host name and Linux user name are separate settings.
 ## Layout
 
 - `hosts/default.nix`: host inventory.
-- `hosts/<name>/`: host settings and generated hardware configuration.
+- `hosts/<name>/`: host settings and an ignored machine-local hardware configuration.
 - `modules/nixos/`: reusable NixOS modules and the `my.*` interface.
 - `home/desktops/`: compositor adapters and generated native configuration.
 - `home/components/`: selectable desktop-shell implementations.
@@ -15,6 +15,68 @@ configuration. The host name and Linux user name are separate settings.
 - `justfile`: global NixOS maintenance recipes.
 
 ## First deployment
+
+### Machine-local hardware configuration
+
+Run `install.sh` on an already installed NixOS system. Before evaluating the
+flake or replacing `/etc/nixos`, the installer copies the machine's existing
+`/etc/nixos/hardware-configuration.nix` to
+`hosts/<host>/hardware-configuration.nix`. If the original file is unavailable,
+it uses `sudo nixos-generate-config --show-hardware-config` to generate one
+from the currently running system. This includes the machine's filesystem
+identifiers, mount layout, and initrd drivers.
+
+The copied file is ignored by Git and included by the explicit `path:` flake
+reference. It is required for evaluating the host; a fresh checkout needs the
+installer or a manual copy before `nix flake check` can succeed.
+Subsequent installer runs preserve the host's existing hardware file.
+The updated `j pull` recipe and `install.sh --update` also back up the hardware
+file before pulling and restore it if Git deletes it during the transition
+from tracked configuration to an ignored local file.
+
+For the first update using an older installer/justfile, or when running
+`git pull` directly during that transition, make a backup outside the checkout
+first. In Bash:
+
+```bash
+hardware_backup="$(mktemp)"
+cp "$HOME/.nixos/hosts/cloudbox/hardware-configuration.nix" "$hardware_backup"
+git -C "$HOME/.nixos" pull --ff-only
+cp "$hardware_backup" "$HOME/.nixos/hosts/cloudbox/hardware-configuration.nix"
+```
+
+If Git reports local modifications or a merge conflict, keep the backup and
+resolve the conflict before continuing. After the file is no longer tracked,
+normal Git pulls leave it in place.
+
+To replace it explicitly, use a verified hardware configuration from this
+machine, for example a backup made before switching to the flake:
+
+```bash
+bash "$HOME/.nixos/install.sh" --host cloudbox \
+  --hardware-config /path/to/hardware-configuration.nix --yes
+```
+
+The installer does not partition or format disks. For a reinstall, use the
+hardware configuration generated for the new installation rather than copying
+the previous machine's hardware file. Fixed disk labels are no longer required.
+
+### Recovery from the installation ISO
+
+For recovery from the NixOS installation ISO, mount the installed root and
+its `/home`, `/nix`, and EFI filesystems under `/mnt`, then enter as root:
+
+```bash
+sudo nixos-enter --root /mnt
+id -u  # Must print 0.
+```
+
+In the target root shell, edit the hardware configuration in the installed
+checkout and run `nixos-rebuild boot --flake path:/etc/nixos#cloudbox`.
+Use `boot` to rebuild the next boot configuration from the rescue environment.
+Run it directly as root: `j boot` and `j switch` invoke `sudo`, whose runtime
+setuid wrapper may be unavailable inside the rescue chroot. Do not change the
+permissions of binaries in the Nix store to repair this.
 
 ### Automated installation from GitHub
 
@@ -34,6 +96,7 @@ This direct download method requires the GitHub repository to be public. The ins
 
 - clones the repository to `$HOME/.nixos`;
 - temporarily provides Git through `nix shell nixpkgs#git` when Git is not installed;
+- copies or generates the selected host's ignored machine-local hardware configuration;
 - writes the selected host's primary user and Git identity to ignored
   `hosts/<host>/installer.nix`;
 - evaluates the flake through a temporary `nix shell nixpkgs#just`;
@@ -67,7 +130,21 @@ j switch
 ### Manual installation
 
 Copy this directory to `$HOME/.nixos`, then make sure it is owned by the
-current user.
+current user. Copy the installed machine's original hardware configuration
+before replacing `/etc/nixos`:
+
+```bash
+cp /etc/nixos/hardware-configuration.nix \
+  "$HOME/.nixos/hosts/cloudbox/hardware-configuration.nix"
+```
+
+If the original file is unavailable, generate it from the running NixOS system:
+
+```bash
+sudo nixos-generate-config --show-hardware-config \
+  > "$HOME/.nixos/hosts/cloudbox/hardware-configuration.nix"
+```
+
 Create `hosts/cloudbox/installer.nix` with the local login name and Git
 identity; the file is ignored by Git but included by the explicit `path:`
 flake reference:

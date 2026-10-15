@@ -2,7 +2,12 @@
 
 {
   imports = [
-    ./hardware-configuration.nix
+    (
+      if builtins.pathExists ./hardware-configuration.nix then
+        ./hardware-configuration.nix
+      else
+        throw "Missing cloudbox hardware configuration. Run install.sh or copy this machine's hardware-configuration.nix into hosts/cloudbox/."
+    )
     ./user.nix
     ./desktop.nix
     ./flatpak.nix
