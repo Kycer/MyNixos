@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -23,7 +24,15 @@ in
           enable = true;
           wrapperFeatures.gtk = true;
 
-          extraSessionCommands = lib.optionalString (remote.enable && remote.headless) ''
+          extraSessionCommands = ''
+            export XDG_SESSION_TYPE=wayland
+            export XDG_SESSION_DESKTOP=sway
+
+            # Foot and other user services must receive the session metadata
+            # before Sway's config starts the graphical session targets.
+            ${pkgs.systemd}/bin/systemctl --user import-environment \
+              XDG_SESSION_TYPE XDG_SESSION_DESKTOP XDG_SESSION_ID || true
+          '' + lib.optionalString (remote.enable && remote.headless) ''
             export WLR_BACKENDS=headless
             export WLR_LIBINPUT_NO_DEVICES=1
             export WLR_RENDERER=pixman
