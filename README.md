@@ -198,6 +198,13 @@ Host-specific settings are grouped by responsibility under `hosts/cloudbox`:
 - use `packages.nix` for host-specific system and Home Manager packages;
 - keep boot settings and `system.stateVersion` in `default.nix`.
 
+RustDesk desktop autostart is controlled by
+`my.remoteDesktop.rustdesk.enable` in the host's `networking.nix`. It defaults
+to false and is enabled only for cloudbox. The Home Manager implementation
+lives in `home/services/rustdesk.nix`. It runs RustDesk as the primary user
+when the desktop session starts and stops it when the session exits. The
+desktop application remains selectable in the host's package list.
+
 `modules/nixos/options.nix` declares and validates the reusable `my.*`
 interface. It does not install programs by itself. `home/default.nix` is the
 Home Manager entry point that imports the user-level implementations. The

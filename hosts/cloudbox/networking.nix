@@ -6,6 +6,8 @@
 
 {
   my = {
+    remoteDesktop.rustdesk.enable = true;
+
     features.wireguard = {
       enable = true;
       listenPort = 51820;

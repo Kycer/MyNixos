@@ -9,6 +9,7 @@
 let
   stablePkgs = import inputs.nixpkgs-stable {
     inherit system;
+    config.allowUnfree = true;
   };
 in
 inputs.nixpkgs.lib.nixosSystem {
