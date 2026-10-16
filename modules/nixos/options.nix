@@ -269,7 +269,7 @@ in
       networkTools.enable = mkEnableOption "user network diagnostic tools";
       rustdesk = {
         enable = mkEnableOption "the RustDesk Flutter desktop application";
-        autoStart = mkEnableOption "the RustDesk server with the desktop session";
+        autoStart = mkEnableOption "RustDesk capture and input services with the desktop session";
       };
     };
 

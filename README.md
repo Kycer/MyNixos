@@ -200,12 +200,23 @@ Host-specific settings are grouped by responsibility under `hosts/cloudbox`:
 
 Set `my.programs.rustdesk.enable = true` in a host's `desktop.nix` to install
 `rustdesk-flutter` for its primary user. This defaults to false and is enabled
-for cloudbox. The Home Manager implementation is `home/programs/rustdesk.nix`.
+for cloudbox. The package is installed by `home/programs/rustdesk.nix`.
 The option controls package installation only. Set
-`my.programs.rustdesk.autoStart = true` to also run `rustdesk --server` as a
-user service with the desktop session; this is enabled for cloudbox. The
-server process allows RustDesk to use the ScreenCast portal supported by
-Sway's wlr backend. Screen selection is still handled by the portal.
+`my.programs.rustdesk.autoStart = true` to run RustDesk with the desktop
+session; this is enabled for cloudbox. `modules/nixos/services/rustdesk.nix`
+defines both the user unit bound to the selected desktop target and the
+system unit it starts and stops. The user unit only runs for the primary
+user, with a Polkit rule limited to those two actions on that system unit.
+The system unit runs `rustdesk --service` to provide uinput and launch
+`--server` as the desktop user. It is not enabled on a boot target.
+Headless Sway also enables the
+libinput backend to receive the virtual keyboard and mouse events. The
+greetd PAM session sets the Wayland metadata before logind registers the
+session, allowing the supervisor to discover it. Screen selection is still
+handled by the portal.
+
+Reusable system service modules live in `modules/nixos/services` and are
+imported through its `default.nix`.
 
 cloudbox temporarily backports [xdg-desktop-portal-wlr PR #405](https://github.com/emersion/xdg-desktop-portal-wlr/pull/405)
 through its desktop module. This fixes the duplicate-frame protocol error

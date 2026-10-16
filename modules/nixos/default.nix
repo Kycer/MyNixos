@@ -8,6 +8,7 @@
     ./home-manager.nix
     ./networking.nix
     ./nix.nix
+    ./services
     ./sudo.nix
     ./user.nix
   ];
