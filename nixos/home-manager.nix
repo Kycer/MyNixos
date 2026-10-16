@@ -22,7 +22,7 @@ in
 
     users.${user} = {
       imports = [
-        ../../home
+        ../home
       ];
 
       home = {

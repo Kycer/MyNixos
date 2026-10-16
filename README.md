@@ -7,7 +7,7 @@ configuration. The host name and Linux user name are separate settings.
 
 - `hosts/default.nix`: host inventory.
 - `hosts/<name>/`: host settings and an ignored machine-local hardware configuration.
-- `modules/nixos/`: reusable NixOS modules and the `my.*` interface.
+- `nixos/`: reusable NixOS modules and the `my.*` interface.
 - `home/desktops/`: compositor adapters and generated native configuration.
 - `home/components/`: selectable desktop-shell implementations.
 - `home/programs/` and `home/services/`: Home Manager configuration.
@@ -198,7 +198,7 @@ Host-specific settings are grouped by responsibility under `hosts/cloudbox`:
 - use `packages.nix` for host-specific system and Home Manager packages;
 - keep boot settings and `system.stateVersion` in `default.nix`.
 
-`modules/nixos/options.nix` declares and validates the reusable `my.*`
+`nixos/options.nix` declares and validates the reusable `my.*`
 interface. It does not install programs by itself. `home/default.nix` is the
 Home Manager entry point that imports the user-level implementations. The
 Linux login name is set once as `my.user.name` and is passed to Home Manager
@@ -225,7 +225,7 @@ Desktop names and imports are discovered automatically. Adding a compositor
 does not require editing the option enum, the desktop import lists, shell
 components, or user services. Add only the matching adapters:
 
-- `modules/nixos/desktops/<name>.nix` enables the system compositor and
+- `nixos/desktops/<name>.nix` enables the system compositor and
   publishes its session target and capabilities;
 - `home/desktops/<name>/default.nix` enables the Home Manager integration and
   renders shared startup commands and key bindings into native syntax.
@@ -295,7 +295,7 @@ my.remoteDesktop.wayvnc.enable = false;
 The current WayVNC implementation is Sway-specific, so it must be disabled
 before selecting Niri.
 
-Flatpak itself is managed by `modules/nixos/flatpak.nix`, while each host owns
+Flatpak itself is managed by `nixos/flatpak.nix`, while each host owns
 its remote and application lists through `my.flatpak`. Applications are
 installed system-wide only on hosts that enable this option; manually installed
 Flatpak applications are left untouched.
