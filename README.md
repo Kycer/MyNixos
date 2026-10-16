@@ -207,6 +207,12 @@ user service with the desktop session; this is enabled for cloudbox. The
 server process allows RustDesk to use the ScreenCast portal supported by
 Sway's wlr backend. Screen selection is still handled by the portal.
 
+cloudbox temporarily backports [xdg-desktop-portal-wlr PR #405](https://github.com/emersion/xdg-desktop-portal-wlr/pull/405)
+through its desktop module. This fixes the duplicate-frame protocol error
+that terminates the portal during RustDesk capture on version 0.8.4. The
+patch is pinned locally and is not yet an upstream release; remove the
+backport when nixpkgs includes the fix.
+
 `modules/nixos/options.nix` declares and validates the reusable `my.*`
 interface. It does not install programs by itself. `home/default.nix` is the
 Home Manager entry point that imports the user-level implementations. The
