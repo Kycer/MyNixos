@@ -5,6 +5,25 @@
 }:
 
 {
+  services.cloudflared.enable = true;
+
+  # The upstream module creates services for JSON-credential tunnels only.
+  # Read the dashboard token at runtime so it never enters the Nix store.
+  systemd.services.cloudflared = lib.mkIf config.services.cloudflared.enable {
+    description = "Cloudflare Tunnel (dashboard-managed)";
+    # Start manually with systemctl; do not start at boot.
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+
+    serviceConfig = {
+      DynamicUser = true;
+      LoadCredential = [ "tunnel-token:/etc/cloudflared/token" ];
+      ExecStart = "${lib.getExe config.services.cloudflared.package} tunnel --no-autoupdate run --token-file %d/tunnel-token";
+      Restart = "on-failure";
+      RestartSec = "5s";
+    };
+  };
+
   my = {
     features.wireguard = {
       enable = true;

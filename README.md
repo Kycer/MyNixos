@@ -445,6 +445,43 @@ just -g check
 just -g switch
 ```
 
+## Cloudflare Tunnel
+
+`cloudbox` provides a dashboard-managed tunnel as the system service
+`cloudflared.service`, which does not start automatically at boot. Start it
+manually when needed. Its configuration lives in
+`hosts/cloudbox/networking.nix`. Systemd loads the tunnel token from
+`/etc/cloudflared/token` at service startup using `LoadCredential`; the Nix
+configuration contains only the file path, not the token. The token is not
+copied into the Nix store or passed in process arguments.
+
+Before the first start, create the token file on the target NixOS machine:
+
+```bash
+sudo install -d -o root -g root -m 0700 /etc/cloudflared
+sudoedit /etc/cloudflared/token
+sudo chown root:root /etc/cloudflared/token
+sudo chmod 0600 /etc/cloudflared/token
+```
+
+Paste only the Tunnel Token from the Cloudflare dashboard into that file,
+without quotes or an environment-variable assignment. Configure hostnames and
+origin services in the Cloudflare dashboard, then run `j switch` to install
+the service. Start it manually and inspect:
+
+```bash
+sudo systemctl start cloudflared.service
+systemctl status cloudflared.service
+sudo journalctl -u cloudflared.service -n 50 --no-pager
+```
+
+Stop it with `sudo systemctl stop cloudflared.service` when no longer needed.
+
+To rotate the token, edit the same file and run
+`sudo systemctl restart cloudflared.service`. Keep this file outside the
+repository; each target machine needs its own local copy. A missing token file
+causes service startup to fail.
+
 ## Headless Sway and WayVNC
 
 `cloudbox` starts a headless Sway session through greetd. The configured
