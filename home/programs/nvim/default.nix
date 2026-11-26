@@ -3,6 +3,7 @@
   configRoot,
   lib,
   osConfig,
+  pkgs,
   ...
 }:
 
@@ -12,7 +13,10 @@ in
 {
   config = lib.mkIf cfg.enable {
     home = {
-      packages = [ cfg.package ];
+      packages = [
+        cfg.package
+        pkgs.tree-sitter
+      ];
       sessionVariables = {
         EDITOR = "nvim";
         VISUAL = "nvim";
