@@ -10,8 +10,8 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    mark-shot = {
-      url = "github:jswysnemc/mark-shot";
+    nur-packages = {
+      url = "github:Kycer/nur-packages";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -29,6 +29,7 @@
           inherit hostName;
           inherit (host) system;
           hostModule = host.module;
+          nurPkgs = inputs.nur-packages.packages.${host.system};
         }
       ) hosts;
     };

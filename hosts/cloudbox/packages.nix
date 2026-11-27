@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ nurPkgs, pkgs, ... }:
 
 {
   # Packages used by this host only can be added here.
@@ -10,5 +10,6 @@
     telegram-desktop
     nautilus
     yazi
+    nurPkgs.sqlmux
   ];
 }

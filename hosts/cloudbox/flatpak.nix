@@ -23,8 +23,7 @@
       ];
       flatpark = [
         "com.dbxio.dbx"
-        "com.motrix.next"
-        "io.github.yituorou.meatshell"
+        # "io.github.yituorou.meatshell"
       ];
     };
   };

@@ -1,6 +1,7 @@
 {
   config,
   inputs,
+  nurPkgs,
   stablePkgs,
   ...
 }:
@@ -14,7 +15,7 @@ in
     useUserPackages = true;
 
     extraSpecialArgs = {
-      inherit inputs stablePkgs;
+      inherit inputs nurPkgs stablePkgs;
       # /etc/nixos is the stable seam used by out-of-store Home Manager
       # links; the installer points it at whichever checkout was selected.
       configRoot = "/etc/nixos";

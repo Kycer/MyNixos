@@ -4,6 +4,7 @@
   hostName,
   system,
   hostModule,
+  nurPkgs,
 }:
 
 let
@@ -16,7 +17,7 @@ inputs.nixpkgs.lib.nixosSystem {
   inherit system;
 
   specialArgs = {
-    inherit inputs stablePkgs;
+    inherit inputs nurPkgs stablePkgs;
   };
 
   modules = [
